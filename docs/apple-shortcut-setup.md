@@ -226,9 +226,12 @@ Add action: **Save File**. The UI reads:
 1. Open **Numbers** on your iPhone/iPad/Mac
 2. Create a new blank spreadsheet
 3. In Row 1, type these column headers: `Date` | `Vendor` | `Amount` | `Description` | `File Name`
-4. Name the table **Expenses** (tap the table name at the top-left of the table to rename it)
-5. Save the spreadsheet to **iCloud Drive** inside a folder called `Receipts`, named `Expense Tracker`
+4. Name the **table** **Expenses** (tap the table name at the top-left of the table to rename it)
+5. Name the **sheet tab** **Expense Tracker** (double-tap the tab at the top of the screen — it defaults to "Sheet 1" — and rename it)
+6. Save the spreadsheet to **iCloud Drive** inside a folder called `Receipts`, named `Expense Tracker`
    - The full path should be: `iCloud Drive / Receipts / Expense Tracker.numbers`
+
+> **Important:** Numbers has three levels: the **file** (Expense Tracker.numbers), **sheets/tabs** within the file, and **tables** within each sheet. The shortcut needs all three names to match. If you get a "Can't Find Sheet" error, it means the sheet tab name doesn't match — open the spreadsheet and rename the tab.
 
 **Now add the action in the shortcut:**
 
