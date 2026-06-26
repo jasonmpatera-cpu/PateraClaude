@@ -1,18 +1,18 @@
 # Apple Shortcut: Automatic Receipt Processor
 
-An Apple Shortcut that uses **Apple Intelligence** to automatically read a receipt, extract the vendor/amount/category, log it to a spreadsheet, and file it into the correct monthly folder — all from the share sheet with zero manual input.
+An Apple Shortcut that uses **ChatGPT** (via Apple Intelligence) to automatically read a receipt image, extract the vendor/amount/description, log it to a spreadsheet, and file it into the correct monthly folder — all from the share sheet with zero manual input.
 
 ## Requirements
 
 - iPhone 15 Pro / iPhone 16 or later, or any M-series iPad/Mac
 - iOS 18.1+ / macOS 15.1+ with Apple Intelligence enabled
 - Settings → Apple Intelligence & Siri → Apple Intelligence: **ON**
+- ChatGPT integration enabled in Settings → Apple Intelligence & Siri → ChatGPT
 
 ## How It Works
 
 1. You share a receipt photo/screenshot/PDF from any app
-2. Apple Intelligence extracts all the text from the image
-3. Apple Intelligence analyzes the text to pull out vendor, total, and category
+2. ChatGPT reads the receipt image directly and extracts vendor, total, and item description
 4. The shortcut renames the file, saves it to the right monthly folder, and adds a row to your spreadsheet
 
 **No typing required.** The whole thing runs automatically.
@@ -29,34 +29,25 @@ Open the **Shortcuts** app → tap **+** to create a new shortcut.
 - Change input type to: **Images, PDFs, Files**
 - This makes the shortcut appear when you tap the share button on any receipt
 
-### Step 2: Extract Text from Receipt (Apple Intelligence OCR)
+### Step 2: Send Receipt to ChatGPT for Analysis
 
-Add action: **Extract Text from Image**
-- Input: **Shortcut Input**
-- This uses Apple's on-device Vision framework to OCR the receipt
-- Save output as variable: `ReceiptText`
+ChatGPT can read receipt images directly — no separate text extraction step needed.
 
-> **Note:** If "Extract Text from Image" doesn't appear, search for **"Extract Text"** in the action search bar. On older iOS versions, this may be called **"Recognize Text in Image"**.
-
-### Step 3: Use ChatGPT to Analyze the Receipt
-
-Search for "ChatGPT" in the actions search bar and add the **Use ChatGPT** action.
-
-The action shows:
+Search for "ChatGPT" in the actions search bar and add the **Use ChatGPT** action. The UI reads:
 
 > **Use** `ChatGPT` ⓥ
 
-With a large text box below it. In the text box, type the following — but for the very first part, tap the variables bar above the keyboard and insert the `Text from Image` variable from Step 2 (it will appear as a blue pill labeled **Text from Image**):
+With a large text box below it. In the text box:
 
-```
-[Text from Image] Analyze this receipt text and respond with ONLY these 4 lines, nothing else:
-VENDOR: [store/merchant name]
-AMOUNT: [total amount as a number like 45.23]
-ITEM DESCRIPTION: [descriptor of item purchased]
+1. First, tap the variables bar above the keyboard and insert **Shortcut Input** — this passes the receipt image directly to ChatGPT (it will appear as a blue pill)
+2. Then type the rest of the prompt after it:
 
-Receipt text:
-[ReceiptText]
-```
+The text box should look like this:
+
+> **Shortcut Input** Analyze this receipt image and respond with ONLY these 3 lines, nothing else:
+> VENDOR: [store/merchant name]
+> AMOUNT: [total amount as a number like 45.23]
+> ITEM DESCRIPTION: [descriptor of item purchased]
 
 Below the text box you'll see two options:
 - **Follow Up:** leave OFF
@@ -64,7 +55,7 @@ Below the text box you'll see two options:
 
 The result of this action is called **Response** — you'll use it in the next step.
 
-### Step 4: Parse the ChatGPT Response into Variables
+### Step 3: Parse the ChatGPT Response into Variables
 
 ChatGPT will return something like:
 ```
@@ -175,7 +166,7 @@ Add action: **Set Variable**. The UI reads:
 
 > **Tip — Using variables:** After setting a variable with the Set Variable action, you can use it in any later action by tapping an input field and selecting the variable name from the variables bar above the keyboard.
 
-### Step 5: Set Up Date Variables
+### Step 4: Set Up Date Variables
 
 1. Add action: **Date**
    - This gives you the current date and time
@@ -205,7 +196,7 @@ Add action: **Set Variable**. The UI reads:
 7. Add action: **Set Variable**
    - Tap `variable` and type `DatePrefix`
 
-### Step 6: Rename and File the Receipt
+### Step 5: Rename and File the Receipt
 
 Add action: **Set Name**. The UI reads:
 
@@ -228,7 +219,7 @@ Add action: **Save File**. The UI reads:
 
 > This automatically creates the folder structure `Receipts/2026/06-June/` if it doesn't exist.
 
-### Step 7: Log to Spreadsheet
+### Step 6: Log to Spreadsheet
 
 **First, create the Numbers spreadsheet (do this once before running the shortcut):**
 
@@ -264,7 +255,7 @@ Here's how to fill in each part:
 
 > **Important:** The values are added in order — the first value goes in column A (Date), second in column B (Vendor), etc. Make sure you add them with **+** in the same order as your spreadsheet headers.
 
-### Step 8: Confirmation Notification
+### Step 7: Confirmation Notification
 
 Add action: **Show Notification**
 - Title: `Receipt Saved ✓`
