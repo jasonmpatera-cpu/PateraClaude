@@ -108,7 +108,12 @@ Add action: **Replace Text**. The UI reads:
 - **in** (third blank): tap it and select **Item from List** (the result from step 4b)
 - Leave **Case Sensitive** and **Regular Expression** toggled OFF
 
-Long-press the result of this Replace Text action → tap **Set Variable** → name it `Vendor`
+Add action: **Set Variable**. The UI reads:
+
+> **Set** `variable` **to** `Replace Text`
+
+- Tap `variable` and type `Vendor`
+- The "to" field should automatically show **Replace Text** (the output of the previous action). If not, tap it and select the Replace Text result.
 
 ---
 
@@ -131,7 +136,12 @@ Add action: **Replace Text**. The UI reads:
 - **with**: leave empty
 - **in**: select the **Item from List** result from step 4d
 
-Long-press the result → **Set Variable** → name it `Amount`
+Add action: **Set Variable**. The UI reads:
+
+> **Set** `variable` **to** `Replace Text`
+
+- Tap `variable` and type `Amount`
+- "to" should automatically show **Replace Text**
 
 ---
 
@@ -154,11 +164,16 @@ Add action: **Replace Text**. The UI reads:
 - **with**: leave empty
 - **in**: select the **Item from List** result from step 4f
 
-Long-press the result → **Set Variable** → name it `Description`
+Add action: **Set Variable**. The UI reads:
+
+> **Set** `variable` **to** `Replace Text`
+
+- Tap `variable` and type `Description`
+- "to" should automatically show **Replace Text**
 
 ---
 
-> **Tip — Setting variables:** Long-press the colored result bubble at the bottom of any action → tap **Set Variable** → type a name. You can then use that variable later by tapping any input field and selecting it from the variables bar above the keyboard.
+> **Tip — Using variables:** After setting a variable with the Set Variable action, you can use it in any later action by tapping an input field and selecting the variable name from the variables bar above the keyboard.
 
 ### Step 5: Set Up Date Variables
 
@@ -169,19 +184,26 @@ Long-press the result → **Set Variable** → name it `Description`
    - Tap input and select the Date result
    - Date Format: **Custom**
    - Custom Format: `yyyy`
-   - Long-press the result → **Set Variable** → name it `Year`
 
-3. Add action: **Format Date**
-   - Tap input and select the Date result (from step 1, not step 2)
-   - Date Format: **Custom**
-   - Custom Format: `MM-MMMM`
-   - Long-press the result → **Set Variable** → name it `MonthFolder`
+3. Add action: **Set Variable**
+   - Tap `variable` and type `Year`
+   - "to" should show **Formatted Date**
 
 4. Add action: **Format Date**
-   - Tap input and select the Date result (from step 1)
+   - Tap input and select the **Date** result (from step 1 — not the Formatted Date)
+   - Date Format: **Custom**
+   - Custom Format: `MM-MMMM`
+
+5. Add action: **Set Variable**
+   - Tap `variable` and type `MonthFolder`
+
+6. Add action: **Format Date**
+   - Tap input and select the **Date** result (from step 1)
    - Date Format: **Custom**
    - Custom Format: `yyyy-MM-dd`
-   - Long-press the result → **Set Variable** → name it `DatePrefix`
+
+7. Add action: **Set Variable**
+   - Tap `variable` and type `DatePrefix`
 
 ### Step 6: Rename and File the Receipt
 
