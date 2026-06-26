@@ -72,71 +72,90 @@ Add action: **Generate Text** (Apple Intelligence)
 
 ### Step 4: Parse the AI Response into Variables
 
-Now extract each field from the AI response using **Match Text** and **Replace Text** actions.
+The AI response will look like this:
+```
+VENDOR: Costco
+AMOUNT: 45.23
+CATEGORY: Groceries
+PAYMENT: Visa
+```
 
-**Extract Vendor:**
-Add action: **Match Text**
-- Input: `AIResponse`
-- Pattern: `VENDOR: (.+)`
-- Save output as variable: `VendorMatch`
+We'll use **Split Text** and **Get Item from List** to pull out each value.
 
-Add action: **Replace Text**
-- Input: `VendorMatch`
-- Find: `VENDOR: `
-- Replace with: (empty)
-- Save output as variable: `Vendor`
+**Split into lines:**
 
-**Extract Amount:**
-Add action: **Match Text**
-- Input: `AIResponse`
-- Pattern: `AMOUNT: (.+)`
-- Save output as variable: `AmountMatch`
+1. Add action: **Split Text**
+   - Tap the input field and select the result from the previous Ask ChatGPT action
+   - Separator: **New Lines**
 
-Add action: **Replace Text**
-- Input: `AmountMatch`
-- Find: `AMOUNT: `
-- Replace with: (empty)
-- Save output as variable: `Amount`
+**Extract Vendor (line 1):**
 
-**Extract Category:**
-Add action: **Match Text**
-- Input: `AIResponse`
-- Pattern: `CATEGORY: (.+)`
-- Save output as variable: `CategoryMatch`
+2. Add action: **Get Item from List**
+   - Tap input and select the Split Text result
+   - Get: **Item At Index** → `1`
+3. Add action: **Replace Text**
+   - Tap input and select the Get Item from List result
+   - Find: `VENDOR: `
+   - Replace: *(leave empty)*
+4. Long-press the Replace Text result → **Set Variable** → name it `Vendor`
 
-Add action: **Replace Text**
-- Input: `CategoryMatch`
-- Find: `CATEGORY: `
-- Replace with: (empty)
-- Save output as variable: `Category`
+**Extract Amount (line 2):**
 
-**Extract Payment Method:**
-Add action: **Match Text**
-- Input: `AIResponse`
-- Pattern: `PAYMENT: (.+)`
-- Save output as variable: `PaymentMatch`
+5. Add action: **Get Item from List**
+   - Tap input and select the Split Text result (from step 1, not step 2)
+   - Get: **Item At Index** → `2`
+6. Add action: **Replace Text**
+   - Tap input and select the Get Item from List result
+   - Find: `AMOUNT: `
+   - Replace: *(leave empty)*
+7. Long-press the Replace Text result → **Set Variable** → name it `Amount`
 
-Add action: **Replace Text**
-- Input: `PaymentMatch`
-- Find: `PAYMENT: `
-- Replace with: (empty)
-- Save output as variable: `PaymentMethod`
+**Extract Category (line 3):**
+
+8. Add action: **Get Item from List**
+   - Tap input and select the Split Text result (from step 1)
+   - Get: **Item At Index** → `3`
+9. Add action: **Replace Text**
+   - Tap input and select the Get Item from List result
+   - Find: `CATEGORY: `
+   - Replace: *(leave empty)*
+10. Long-press the Replace Text result → **Set Variable** → name it `Category`
+
+**Extract Payment Method (line 4):**
+
+11. Add action: **Get Item from List**
+    - Tap input and select the Split Text result (from step 1)
+    - Get: **Item At Index** → `4`
+12. Add action: **Replace Text**
+    - Tap input and select the Get Item from List result
+    - Find: `PAYMENT: `
+    - Replace: *(leave empty)*
+13. Long-press the Replace Text result → **Set Variable** → name it `PaymentMethod`
+
+> **Tip:** To set a variable in Shortcuts, long-press the result bubble at the bottom of any action → tap **Set Variable** → type a name. You can then use that variable in later actions by tapping any input field and selecting it from the variables list above the keyboard.
 
 ### Step 5: Set Up Date Variables
 
-Add action: **Get Current Date**
+1. Add action: **Date**
+   - This gives you the current date and time
 
-Add action: **Format Date**
-- Format: Custom → `yyyy`
-- Save output as variable: `Year`
+2. Add action: **Format Date**
+   - Tap input and select the Date result
+   - Date Format: **Custom**
+   - Custom Format: `yyyy`
+   - Long-press the result → **Set Variable** → name it `Year`
 
-Add action: **Format Date**
-- Format: Custom → `MM-MMMM`
-- Save output as variable: `MonthFolder`
+3. Add action: **Format Date**
+   - Tap input and select the Date result (from step 1, not step 2)
+   - Date Format: **Custom**
+   - Custom Format: `MM-MMMM`
+   - Long-press the result → **Set Variable** → name it `MonthFolder`
 
-Add action: **Format Date**
-- Format: Custom → `yyyy-MM-dd`
-- Save output as variable: `DatePrefix`
+4. Add action: **Format Date**
+   - Tap input and select the Date result (from step 1)
+   - Date Format: **Custom**
+   - Custom Format: `yyyy-MM-dd`
+   - Long-press the result → **Set Variable** → name it `DatePrefix`
 
 ### Step 6: Rename and File the Receipt
 
