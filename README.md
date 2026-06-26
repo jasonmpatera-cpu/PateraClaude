@@ -1,34 +1,48 @@
 # Receipt Management Workflow
 
-A complete system for capturing, organizing, and tracking receipts using Apple Shortcuts + Google Sheets.
+Automatically process receipts using **Apple Intelligence** — share a receipt from any app, and it gets read by AI, logged to a spreadsheet, and filed into the correct monthly folder. Zero typing required.
 
 ## How It Works
 
-1. **Share a receipt** (photo, screenshot, PDF) via the iOS/macOS share sheet
-2. **Apple Shortcut** prompts you for vendor, amount, and category, then saves the file to an iCloud Drive folder organized by year/month
-3. **Google Apps Script** (optional) watches a Google Drive folder and auto-logs receipts to a Google Sheet
-4. **Python script** (optional) processes receipt images locally with OCR
+1. Share a receipt (photo, screenshot, PDF) via the **share sheet**
+2. Apple Intelligence **extracts the text** from the image (on-device OCR)
+3. Apple Intelligence **analyzes the receipt** to pull out vendor, total amount, and category
+4. The shortcut **renames the file** (e.g. `2026-06-26_Costco_$45.23.jpg`)
+5. **Files it** into `iCloud Drive/Receipts/2026/06-June/`
+6. **Adds a row** to your Numbers spreadsheet (or CSV for Excel/Google Sheets)
+
+## Requirements
+
+- iPhone 15 Pro / iPhone 16+ or M-series iPad/Mac
+- iOS 18.1+ with Apple Intelligence enabled
+
+## Setup Guide
+
+**[→ Full step-by-step shortcut build instructions](docs/apple-shortcut-setup.md)**
 
 ## Folder Structure
 
 ```
-Receipts/
+iCloud Drive/Receipts/
+├── Expense Tracker.numbers
 ├── 2026/
 │   ├── 01-January/
 │   ├── 02-February/
-│   └── ...
+│   └── 06-June/
+│       ├── 2026-06-20_Amazon_$129.99.png
+│       └── 2026-06-26_Costco_$45.23.jpg
 ```
-
-## Components
-
-| File | Purpose |
-|------|---------|
-| [`docs/apple-shortcut-setup.md`](docs/apple-shortcut-setup.md) | Step-by-step guide to build the Apple Shortcut |
-| [`google-apps-script/ReceiptProcessor.js`](google-apps-script/ReceiptProcessor.js) | Google Apps Script for auto-processing |
-| [`python/receipt_processor.py`](python/receipt_processor.py) | Local Python OCR + Excel logging |
-| [`python/requirements.txt`](python/requirements.txt) | Python dependencies |
 
 ## Spreadsheet Columns
 
-| Date | Vendor | Amount | Category | Payment Method | File Name | Notes |
-|------|--------|--------|----------|----------------|-----------|-------|
+| Date | Vendor | Amount | Category | Payment Method | File Name |
+|------|--------|--------|----------|----------------|-----------|
+
+## Optional: Server-Side Processing
+
+For additional automation beyond the Apple Shortcut:
+
+| File | Purpose |
+|------|---------|
+| [`google-apps-script/ReceiptProcessor.js`](google-apps-script/ReceiptProcessor.js) | Google Drive + Sheets auto-processing with OCR |
+| [`python/receipt_processor.py`](python/receipt_processor.py) | Local Python OCR + Excel logging |
