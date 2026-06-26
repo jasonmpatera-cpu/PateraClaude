@@ -50,17 +50,16 @@ Add action: **Ask ChatGPT**
 - Prompt:
 
 ```
-Analyze this receipt text and respond with ONLY these 4 lines, nothing else:
+Analyze this receipt text and respond with ONLY these 3 lines, nothing else:
 VENDOR: [store/merchant name]
 AMOUNT: [total amount as a number like 45.23]
-CATEGORY: [one of: Groceries, Dining, Gas, Shopping, Healthcare, Utilities, Travel, Entertainment, Subscriptions, Other]
-PAYMENT: [payment method if visible, otherwise Credit Card]
+DESCRIPTION: [brief description of what was purchased, 5 words max]
 
 Receipt text:
 [ReceiptText]
 ```
 
-- Save output as variable: `AIResponse`
+- Long-press the result → **Set Variable** → name it `AIResponse`
 
 **Method B: Using "Prompt for Siri" / Apple Intelligence text generation**
 
@@ -68,7 +67,7 @@ If ChatGPT integration isn't available, add:
 
 Add action: **Generate Text** (Apple Intelligence)
 - Use the same prompt as above with `ReceiptText` inserted
-- Save output as variable: `AIResponse`
+- Long-press the result → **Set Variable** → name it `AIResponse`
 
 ### Step 4: Parse the AI Response into Variables
 
@@ -76,63 +75,75 @@ The AI response will look like this:
 ```
 VENDOR: Costco
 AMOUNT: 45.23
-CATEGORY: Groceries
-PAYMENT: Visa
+DESCRIPTION: Bulk groceries and household items
 ```
 
-We'll use **Split Text** and **Get Item from List** to pull out each value.
+We'll use **Split Text**, **Get Item from List**, and **Replace Text** to pull out each value.
+
+The **Replace Text** action in Shortcuts reads as:
+
+> Replace `___` with `___` in `___`
+
+Here's how to fill in each blank for every field:
+
+---
 
 **Split into lines:**
 
 1. Add action: **Split Text**
-   - Tap the input field and select the result from the previous Ask ChatGPT action
-   - Separator: **New Lines**
+   - Tap the blue **"Text"** input and select the `AIResponse` variable
+   - Tap **"By"** and choose: **New Lines**
+
+---
 
 **Extract Vendor (line 1):**
 
 2. Add action: **Get Item from List**
-   - Tap input and select the Split Text result
-   - Get: **Item At Index** → `1`
+   - Tap input and select the **Split Text** result
+   - Tap **"First Item"** and change to: **Item At Index** → type `1`
+
 3. Add action: **Replace Text**
-   - Tap input and select the Get Item from List result
-   - Find: `VENDOR: `
-   - Replace: *(leave empty)*
+   - The action reads: Replace `___` with `___` in `___`
+   - **First blank** (Replace): type `VENDOR: `
+   - **Second blank** (with): leave it empty — just tap it and don't type anything
+   - **Third blank** (in): tap it and select the **Item from List** result from step 2
+   - This strips the "VENDOR: " label, leaving just the vendor name
+
 4. Long-press the Replace Text result → **Set Variable** → name it `Vendor`
+
+---
 
 **Extract Amount (line 2):**
 
 5. Add action: **Get Item from List**
-   - Tap input and select the Split Text result (from step 1, not step 2)
-   - Get: **Item At Index** → `2`
+   - Tap input and select the **Split Text** result (scroll up to find it — use the one from step 1)
+   - Change to: **Item At Index** → type `2`
+
 6. Add action: **Replace Text**
-   - Tap input and select the Get Item from List result
-   - Find: `AMOUNT: `
-   - Replace: *(leave empty)*
+   - **First blank** (Replace): type `AMOUNT: `
+   - **Second blank** (with): leave empty
+   - **Third blank** (in): tap and select the **Item from List** result from step 5
+
 7. Long-press the Replace Text result → **Set Variable** → name it `Amount`
 
-**Extract Category (line 3):**
+---
+
+**Extract Description (line 3):**
 
 8. Add action: **Get Item from List**
-   - Tap input and select the Split Text result (from step 1)
-   - Get: **Item At Index** → `3`
+   - Tap input and select the **Split Text** result (from step 1)
+   - Change to: **Item At Index** → type `3`
+
 9. Add action: **Replace Text**
-   - Tap input and select the Get Item from List result
-   - Find: `CATEGORY: `
-   - Replace: *(leave empty)*
-10. Long-press the Replace Text result → **Set Variable** → name it `Category`
+   - **First blank** (Replace): type `DESCRIPTION: `
+   - **Second blank** (with): leave empty
+   - **Third blank** (in): tap and select the **Item from List** result from step 8
 
-**Extract Payment Method (line 4):**
+10. Long-press the Replace Text result → **Set Variable** → name it `Description`
 
-11. Add action: **Get Item from List**
-    - Tap input and select the Split Text result (from step 1)
-    - Get: **Item At Index** → `4`
-12. Add action: **Replace Text**
-    - Tap input and select the Get Item from List result
-    - Find: `PAYMENT: `
-    - Replace: *(leave empty)*
-13. Long-press the Replace Text result → **Set Variable** → name it `PaymentMethod`
+---
 
-> **Tip:** To set a variable in Shortcuts, long-press the result bubble at the bottom of any action → tap **Set Variable** → type a name. You can then use that variable in later actions by tapping any input field and selecting it from the variables list above the keyboard.
+> **Tip — Setting variables:** Long-press the colored result bubble at the bottom of any action → tap **Set Variable** → type a name. You can then use that variable later by tapping any input field and selecting it from the variables bar above the keyboard.
 
 ### Step 5: Set Up Date Variables
 
@@ -183,7 +194,7 @@ First, create a Numbers spreadsheet:
 2. Create a new blank spreadsheet
 3. Save it to iCloud Drive as `Receipts/Expense Tracker.numbers`
 4. Name the first table `Expenses`
-5. Set headers in Row 1: `Date | Vendor | Amount | Category | Payment Method | File Name`
+5. Set headers in Row 1: `Date | Vendor | Amount | Description | File Name`
 
 Then in the shortcut, add:
 
@@ -194,14 +205,13 @@ Add action: **Add Row to Numbers Spreadsheet**
   - Date → `DatePrefix`
   - Vendor → `Vendor`
   - Amount → `Amount`
-  - Category → `Category`
-  - Payment Method → `PaymentMethod`
+  - Description → `Description`
   - File Name → `DatePrefix`\_`Vendor`\_$`Amount`
 
 **Option B: CSV file (works with Excel, Google Sheets, etc.)**
 
 Add action: **Text**
-- Content: `DatePrefix,Vendor,Amount,Category,PaymentMethod,DatePrefix_Vendor_$Amount`
+- Content: `DatePrefix,Vendor,Amount,Description,DatePrefix_Vendor_$Amount`
 
 Add action: **Append to File**
 - Service: iCloud Drive
@@ -213,7 +223,7 @@ Add action: **Append to File**
 
 Add action: **Show Notification**
 - Title: `Receipt Saved ✓`
-- Body: `Vendor — $Amount → Category (MonthFolder)`
+- Body: `Vendor — $Amount — Description (MonthFolder)`
 
 ---
 
@@ -283,7 +293,7 @@ iCloud Drive/
 If using Option B (CSV), create the header row first by running this one-time shortcut:
 
 1. New Shortcut → Add action: **Text**
-   - Content: `Date,Vendor,Amount,Category,Payment Method,File Name`
+   - Content: `Date,Vendor,Amount,Description,File Name`
 2. Add action: **Save File**
    - Path: `Receipts/expense_log.csv`
    - Service: iCloud Drive

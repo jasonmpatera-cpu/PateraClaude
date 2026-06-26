@@ -35,8 +35,8 @@ iCloud Drive/Receipts/
 
 ## Spreadsheet Columns
 
-| Date | Vendor | Amount | Category | Payment Method | File Name |
-|------|--------|--------|----------|----------------|-----------|
+| Date | Vendor | Amount | Description | File Name |
+|------|--------|--------|-------------|-----------|
 
 ## Optional: Server-Side Processing
 
