@@ -38,108 +38,123 @@ Add action: **Extract Text from Image**
 
 > **Note:** If "Extract Text from Image" doesn't appear, search for **"Extract Text"** in the action search bar. On older iOS versions, this may be called **"Recognize Text in Image"**.
 
-### Step 3: Use Apple Intelligence to Analyze the Receipt
+### Step 3: Use ChatGPT to Analyze the Receipt
 
-Add action: **Ask Apple Intelligence** (or **"Write with Siri"** / **"Ask ChatGPT"** depending on your iOS version)
+Search for "ChatGPT" in the actions search bar and add the **Use ChatGPT** action.
 
-- If you have the **ChatGPT integration** enabled in Apple Intelligence settings, use that. Otherwise, use the built-in "Summarize" or "Create Text" action with a custom prompt.
+The action shows:
 
-**Method A: Using "Ask ChatGPT" action (recommended)**
+> **Use** `ChatGPT` ⓥ
 
-Add action: **Ask ChatGPT**
-- Prompt:
+With a large text box below it. In the text box, type the following — but for the very first part, tap the variables bar above the keyboard and insert the `Text from Image` variable from Step 2 (it will appear as a blue pill labeled **Text from Image**):
 
 ```
-Analyze this receipt text and respond with ONLY these 3 lines, nothing else:
+[Text from Image] Analyze this receipt text and respond with ONLY these 4 lines, nothing else:
 VENDOR: [store/merchant name]
 AMOUNT: [total amount as a number like 45.23]
-DESCRIPTION: [brief description of what was purchased, 5 words max]
+ITEM DESCRIPTION: [descriptor of item purchased]
 
 Receipt text:
 [ReceiptText]
 ```
 
-- Long-press the result → **Set Variable** → name it `AIResponse`
+Below the text box you'll see two options:
+- **Follow Up:** leave OFF
+- **Output:** leave as **Automatic**
 
-**Method B: Using "Prompt for Siri" / Apple Intelligence text generation**
+The result of this action is called **Response** — you'll use it in the next step.
 
-If ChatGPT integration isn't available, add:
+### Step 4: Parse the ChatGPT Response into Variables
 
-Add action: **Generate Text** (Apple Intelligence)
-- Use the same prompt as above with `ReceiptText` inserted
-- Long-press the result → **Set Variable** → name it `AIResponse`
-
-### Step 4: Parse the AI Response into Variables
-
-The AI response will look like this:
+ChatGPT will return something like:
 ```
 VENDOR: Costco
 AMOUNT: 45.23
-DESCRIPTION: Bulk groceries and household items
+ITEM DESCRIPTION: Bulk groceries and household supplies
 ```
 
-We'll use **Split Text**, **Get Item from List**, and **Replace Text** to pull out each value.
-
-The **Replace Text** action in Shortcuts reads as:
-
-> Replace `___` with `___` in `___`
-
-Here's how to fill in each blank for every field:
+We need to split this into separate variables. Each action below shows exactly how the UI reads — fill in the blanks as described.
 
 ---
 
-**Split into lines:**
+**4a. Split the response into lines**
 
-1. Add action: **Split Text**
-   - Tap the blue **"Text"** input and select the `AIResponse` variable
-   - Tap **"By"** and choose: **New Lines**
+Add action: **Split Text**. The UI reads:
 
----
+> **Split** `Response` **by** `New Lines`
 
-**Extract Vendor (line 1):**
-
-2. Add action: **Get Item from List**
-   - Tap input and select the **Split Text** result
-   - Tap **"First Item"** and change to: **Item At Index** → type `1`
-
-3. Add action: **Replace Text**
-   - The action reads: Replace `___` with `___` in `___`
-   - **First blank** (Replace): type `VENDOR: `
-   - **Second blank** (with): leave it empty — just tap it and don't type anything
-   - **Third blank** (in): tap it and select the **Item from List** result from step 2
-   - This strips the "VENDOR: " label, leaving just the vendor name
-
-4. Long-press the Replace Text result → **Set Variable** → name it `Vendor`
+- Tap the first blank and select the **Response** result from the ChatGPT action above (it appears as a green pill labeled **Response**)
+- Tap the second blank ("by") and choose **New Lines**
 
 ---
 
-**Extract Amount (line 2):**
+**4b. Get line 1 (vendor)**
 
-5. Add action: **Get Item from List**
-   - Tap input and select the **Split Text** result (scroll up to find it — use the one from step 1)
-   - Change to: **Item At Index** → type `2`
+Add action: **Get Item from List**. The UI reads:
 
-6. Add action: **Replace Text**
-   - **First blank** (Replace): type `AMOUNT: `
-   - **Second blank** (with): leave empty
-   - **Third blank** (in): tap and select the **Item from List** result from step 5
+> **Get** `Item at Index` `1` **from** `Split Text`
 
-7. Long-press the Replace Text result → **Set Variable** → name it `Amount`
+- Tap the first blank, change from "First Item" to **Item at Index**, then type `1`
+- Tap "from" and select the **Split Text** result
+
+**4c. Strip the VENDOR label**
+
+Add action: **Replace Text**. The UI reads:
+
+> **Replace** `VENDOR: ` **with** ` ` **in** `Item from List`
+
+- **Replace** (first blank): type `VENDOR: ` (include the space after the colon)
+- **with** (second blank): leave it empty — tap the field but don't type anything
+- **in** (third blank): tap it and select **Item from List** (the result from step 4b)
+- Leave **Case Sensitive** and **Regular Expression** toggled OFF
+
+Long-press the result of this Replace Text action → tap **Set Variable** → name it `Vendor`
 
 ---
 
-**Extract Description (line 3):**
+**4d. Get line 2 (amount)**
 
-8. Add action: **Get Item from List**
-   - Tap input and select the **Split Text** result (from step 1)
-   - Change to: **Item At Index** → type `3`
+Add action: **Get Item from List**. The UI reads:
 
-9. Add action: **Replace Text**
-   - **First blank** (Replace): type `DESCRIPTION: `
-   - **Second blank** (with): leave empty
-   - **Third blank** (in): tap and select the **Item from List** result from step 8
+> **Get** `Item at Index` `2` **from** `Split Text`
 
-10. Long-press the Replace Text result → **Set Variable** → name it `Description`
+- Set index to `2`
+- For "from", scroll up and select the **Split Text** result (from step 4a, not 4b)
+
+**4e. Strip the AMOUNT label**
+
+Add action: **Replace Text**. The UI reads:
+
+> **Replace** `AMOUNT: ` **with** ` ` **in** `Item from List`
+
+- **Replace**: type `AMOUNT: `
+- **with**: leave empty
+- **in**: select the **Item from List** result from step 4d
+
+Long-press the result → **Set Variable** → name it `Amount`
+
+---
+
+**4f. Get line 3 (item description)**
+
+Add action: **Get Item from List**. The UI reads:
+
+> **Get** `Item at Index` `3` **from** `Split Text`
+
+- Set index to `3`
+- For "from", scroll up and select the **Split Text** result (from step 4a)
+
+**4g. Strip the ITEM DESCRIPTION label**
+
+Add action: **Replace Text**. The UI reads:
+
+> **Replace** `ITEM DESCRIPTION: ` **with** ` ` **in** `Item from List`
+
+- **Replace**: type `ITEM DESCRIPTION: `
+- **with**: leave empty
+- **in**: select the **Item from List** result from step 4f
+
+Long-press the result → **Set Variable** → name it `Description`
 
 ---
 
