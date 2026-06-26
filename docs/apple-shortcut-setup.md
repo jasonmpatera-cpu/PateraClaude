@@ -207,54 +207,62 @@ Add action: **Set Variable**. The UI reads:
 
 ### Step 6: Rename and File the Receipt
 
-Add action: **Set Name**
-- Input: **Shortcut Input** (the original receipt image/PDF)
-- Name: `DatePrefix`\_`Vendor`\_$`Amount`
-- Example result: `2026-06-26_Costco_$45.23.jpg`
+Add action: **Set Name**. The UI reads:
 
-Add action: **Save File**
-- Service: **iCloud Drive**
-- Subpath: `Receipts/Year/MonthFolder/`
-- Ask Where to Save: **OFF**
-- Overwrite If File Exists: **ON**
+> **Set name of** `Shortcut Input` **to** `___`
+
+- The first part should auto-fill with **Shortcut Input** (the original receipt image/PDF)
+- Tap the "to" blank and build the new file name by inserting variables from the bar above the keyboard:
+  - Tap `DatePrefix` → type `_` → tap `Vendor` → type `_$` → tap `Amount`
+  - It should look like: **DatePrefix** \_ **Vendor** \_$ **Amount**
+  - Example result: `2026-06-26_Costco_$45.23`
+
+Add action: **Save File**. The UI reads:
+
+> **Save** `Renamed Item` **to** `iCloud Drive`
+
+- **Ask Where To Save:** OFF
+- **Subpath:** tap the field and type `Receipts/` then tap `Year` from the variables bar, type `/` then tap `MonthFolder` from the variables bar, then type `/`
+  - It should look like: `Receipts/` **Year** `/` **MonthFolder** `/`
+- **Overwrite If File Exists:** ON
 
 > This automatically creates the folder structure `Receipts/2026/06-June/` if it doesn't exist.
 
 ### Step 7: Log to Spreadsheet
 
-Choose ONE of these options:
+**First, create the Numbers spreadsheet (do this once before running the shortcut):**
 
-**Option A: Apple Numbers spreadsheet (recommended for Apple ecosystem)**
-
-First, create a Numbers spreadsheet:
 1. Open **Numbers** on your iPhone/iPad/Mac
 2. Create a new blank spreadsheet
-3. Save it to iCloud Drive as `Receipts/Expense Tracker.numbers`
-4. Name the first table `Expenses`
-5. Set headers in Row 1: `Date | Vendor | Amount | Description | File Name`
+3. In Row 1, type these column headers: `Date` | `Vendor` | `Amount` | `Description` | `File Name`
+4. Name the table **Expenses** (tap the table name at the top-left of the table to rename it)
+5. Save the spreadsheet to **iCloud Drive** inside a folder called `Receipts`, named `Expense Tracker`
+   - The full path should be: `iCloud Drive / Receipts / Expense Tracker.numbers`
 
-Then in the shortcut, add:
+**Now add the action in the shortcut:**
 
-Add action: **Add Row to Numbers Spreadsheet**
-- Spreadsheet: `Expense Tracker` (in iCloud Drive → Receipts)
-- Table: `Expenses`
-- Values:
-  - Date → `DatePrefix`
-  - Vendor → `Vendor`
-  - Amount → `Amount`
-  - Description → `Description`
-  - File Name → `DatePrefix`\_`Vendor`\_$`Amount`
+Add action: **Add to Numbers Spreadsheet**. The UI reads:
 
-**Option B: CSV file (works with Excel, Google Sheets, etc.)**
+> **Add** `___` **Values** **+** **to the** `Top` **of** `Expenses` **in** `Expense Tracker` **in** `Receipts/Expense Tracker`
 
-Add action: **Text**
-- Content: `DatePrefix,Vendor,Amount,Description,DatePrefix_Vendor_$Amount`
+Here's how to fill in each part:
 
-Add action: **Append to File**
-- Service: iCloud Drive
-- File Path: `Receipts/expense_log.csv`
+1. **The values area** (the first blank, before "Values"): this is where you add ALL the column values. You need to tap the **+** button to add each value one at a time, in the same order as your spreadsheet columns:
+   - Tap **+** → select `DatePrefix` from the variables bar (this fills the Date column)
+   - Tap **+** → select `Vendor` (this fills the Vendor column)
+   - Tap **+** → select `Amount` (this fills the Amount column)
+   - Tap **+** → select `Description` (this fills the Description column)
+   - Tap **+** → then build the file name by tapping `DatePrefix`, typing `_`, tapping `Vendor`, typing `_$`, tapping `Amount` (this fills the File Name column)
 
-> You can open the CSV in Excel or Google Sheets at any time.
+2. **to the** → tap and choose **Bottom** (so new receipts get added below existing rows, not above)
+
+3. **of** → should show **Expenses** (the table name). If not, tap it and select the Expenses table
+
+4. **in** (first) → should show **Expense Tracker** (the spreadsheet name). Tap to browse and select it if needed
+
+5. **in** (second) → should show **Receipts/Expense Tracker** (the iCloud Drive path). Tap to browse to the correct location
+
+> **Important:** The values are added in order — the first value goes in column A (Date), second in column B (Vendor), etc. Make sure you add them with **+** in the same order as your spreadsheet headers.
 
 ### Step 8: Confirmation Notification
 
