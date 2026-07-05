@@ -1,0 +1,741 @@
+<meta charset="utf-8">
+<title>Call of Duty PS5 Coloring Page</title>
+<style>
+  @font-face {
+    font-family: 'Stencil System';
+    src: local('Arial Black');
+  }
+  :root{
+    --ink:#15150f;
+    --paper:#ffffff;
+    --screen-bg:#1c1e17;
+    --screen-bg-2:#23261d;
+    --accent:#8a9a5b;
+    --brass:#c9a227;
+    --muted:#b9bdae;
+    --panel-line:#3a3d30;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1200px 800px at 50% -10%, var(--screen-bg-2), var(--screen-bg) 60%);
+    color:var(--muted);
+    font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding:48px 20px 64px;
+  }
+  .kicker{
+    font-family: ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 10px;
+  }
+  h1{
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight:800;
+    letter-spacing:.02em;
+    text-transform:uppercase;
+    color:#f2f1ea;
+    margin:0 0 8px;
+    text-wrap:balance;
+    text-align:center;
+  }
+  .sub{
+    max-width:520px;
+    text-align:center;
+    font-size:15px;
+    line-height:1.5;
+    color:var(--muted);
+    margin:0 0 28px;
+  }
+  .controls{
+    display:flex;
+    gap:14px;
+    align-items:center;
+    margin-bottom:30px;
+    flex-wrap:wrap;
+    justify-content:center;
+  }
+  button{
+    font-family: inherit;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.06em;
+    text-transform:uppercase;
+    padding:13px 26px;
+    border-radius:2px;
+    border:1px solid var(--brass);
+    background:var(--brass);
+    color:#1c1e17;
+    cursor:pointer;
+  }
+  button:hover{ background:#dbb636; }
+  button:focus-visible{ outline:3px solid #f2f1ea; outline-offset:2px; }
+  .spec-tags{
+    display:flex;
+    gap:8px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size:11px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--muted);
+  }
+  .spec-tags span{
+    border:1px solid var(--panel-line);
+    padding:6px 10px;
+    border-radius:2px;
+  }
+  .sheet-frame{
+    background: linear-gradient(180deg,#2a2d21,#1c1e17);
+    padding:22px;
+    border-radius:4px;
+    border:1px solid var(--panel-line);
+    box-shadow: 0 30px 60px -20px rgba(0,0,0,.6);
+  }
+  .sheet{
+    width:min(78vw, 620px);
+    aspect-ratio: 8.5 / 11;
+    background:var(--paper);
+    display:block;
+  }
+  canvas{
+    width:100%;
+    height:100%;
+    display:block;
+  }
+  footer{
+    margin-top:22px;
+    font-family: ui-monospace, Menlo, monospace;
+    font-size:11px;
+    letter-spacing:.05em;
+    color:var(--panel-line);
+    text-align:center;
+  }
+  @media (prefers-reduced-motion: no-preference){
+    .sheet-frame{ animation: rise .5s ease-out; }
+  }
+  @keyframes rise{
+    from{ opacity:0; transform: translateY(10px); }
+    to{ opacity:1; transform: translateY(0); }
+  }
+
+  @media print{
+    @page{ size: letter portrait; margin:0; }
+    body{
+      background:#fff;
+      padding:0;
+      display:block;
+    }
+    .kicker, h1, .sub, .controls, footer{ display:none; }
+    .sheet-frame{
+      padding:0;
+      border:none;
+      box-shadow:none;
+      background:#fff;
+    }
+    .sheet{
+      width:8.5in;
+      height:11in;
+    }
+  }
+</style>
+
+<p class="kicker">Field Manual · Recreation Annex</p>
+<h1>Call of Duty Coloring Sheet</h1>
+<p class="sub">A full-page, high-contrast line-art sheet for your printer: an operator on patrol, a PS5, and a controller. Print at 100% scale on US Letter paper.</p>
+
+<div class="controls">
+  <button onclick="window.print()">Print Coloring Page</button>
+  <div class="spec-tags">
+    <span>US Letter · 8.5×11 in</span>
+    <span>B/W line art</span>
+  </div>
+</div>
+
+<div class="sheet-frame">
+  <div class="sheet">
+    <canvas id="page" width="1700" height="2200"></canvas>
+  </div>
+</div>
+
+<footer>Original fan art inspired by Call of Duty on PlayStation 5. Not affiliated with or endorsed by Activision or Sony.</footer>
+
+<script>
+const cv = document.getElementById('page');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const INK = '#15150f';
+const PAPER = '#ffffff';
+
+ctx.fillStyle = PAPER;
+ctx.fillRect(0,0,W,H);
+ctx.lineJoin = 'round';
+ctx.lineCap = 'round';
+
+function roundRectPath(c,x,y,w,h,r){
+  if (typeof r === 'number') r = {tl:r,tr:r,br:r,bl:r};
+  c.beginPath();
+  c.moveTo(x+r.tl, y);
+  c.lineTo(x+w-r.tr, y);
+  c.quadraticCurveTo(x+w, y, x+w, y+r.tr);
+  c.lineTo(x+w, y+h-r.br);
+  c.quadraticCurveTo(x+w, y+h, x+w-r.br, y+h);
+  c.lineTo(x+r.bl, y+h);
+  c.quadraticCurveTo(x, y+h, x, y+h-r.bl);
+  c.lineTo(x, y+r.tl);
+  c.quadraticCurveTo(x, y, x+r.tl, y);
+  c.closePath();
+}
+
+function fillStroke(lw){
+  ctx.lineWidth = lw || 7;
+  ctx.fillStyle = PAPER;
+  ctx.fill();
+  ctx.strokeStyle = INK;
+  ctx.stroke();
+}
+function strokeOnly(lw){
+  ctx.lineWidth = lw || 6;
+  ctx.strokeStyle = INK;
+  ctx.stroke();
+}
+
+function star(cx,cy,rOuter,rInner,points,rot){
+  ctx.beginPath();
+  const step = Math.PI / points;
+  for (let i=0;i<points*2;i++){
+    const r = i%2===0 ? rOuter : rInner;
+    const a = i*step + rot;
+    const x = cx + r*Math.sin(a);
+    const y = cy - r*Math.cos(a);
+    if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+  }
+  ctx.closePath();
+}
+
+/* ---------- crop / register marks ---------- */
+function cropMarks(){
+  const m = 46, len = 26;
+  ctx.lineWidth = 2.5;
+  ctx.strokeStyle = INK;
+  const corners = [[m,m,1,1],[W-m,m,-1,1],[m,H-m,1,-1],[W-m,H-m,-1,-1]];
+  corners.forEach(([x,y,dx,dy])=>{
+    ctx.beginPath();
+    ctx.moveTo(x,y); ctx.lineTo(x+len*dx,y);
+    ctx.moveTo(x,y); ctx.lineTo(x,y+len*dy);
+    ctx.stroke();
+  });
+}
+
+/* ---------- title banner ---------- */
+function titleBanner(){
+  ctx.lineWidth = 6;
+  ctx.strokeStyle = INK;
+  ctx.beginPath(); ctx.moveTo(160,150); ctx.lineTo(1540,150); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(160,308); ctx.lineTo(1540,308); ctx.stroke();
+
+  ctx.save();
+  ctx.font = '800 92px "Arial Black", Arial, sans-serif';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'alphabetic';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '2px';
+  ctx.lineWidth = 3.5;
+  ctx.strokeStyle = INK;
+  ctx.fillStyle = PAPER;
+  const tx = W/2;
+  ctx.fillText('CALL OF DUTY', tx, 250);
+  ctx.strokeText('CALL OF DUTY', tx, 250);
+  ctx.restore();
+
+  ctx.save();
+  ctx.font = '700 34px "Arial", sans-serif';
+  ctx.textAlign = 'center';
+  if ('letterSpacing' in ctx) ctx.letterSpacing = '4px';
+  ctx.fillStyle = INK;
+  ctx.fillText('PS5  BATTLE  STATION  —  COLORING  SHEET', W/2, 288);
+  ctx.restore();
+
+  [ [210,225], [1490,225] ].forEach(([x,y])=>{
+    star(x,y,34,15,5,0);
+    fillStroke(5);
+  });
+}
+
+/* ---------- sky ---------- */
+function cloud(cx,cy,scale){
+  ctx.save();
+  ctx.translate(cx,cy); ctx.scale(scale,scale);
+  ctx.beginPath();
+  ctx.moveTo(-90,10);
+  ctx.bezierCurveTo(-110,-40, -40,-55, -20,-30);
+  ctx.bezierCurveTo(-10,-60, 60,-60, 60,-20);
+  ctx.bezierCurveTo(100,-25, 105,15, 70,20);
+  ctx.bezierCurveTo(70,35, -80,35, -90,10);
+  ctx.closePath();
+  ctx.restore();
+  fillStroke(5);
+}
+
+function helicopter(cx,cy,scale){
+  ctx.save();
+  ctx.translate(cx,cy); ctx.scale(scale,scale);
+  // body
+  ctx.beginPath();
+  ctx.moveTo(-70,0);
+  ctx.quadraticCurveTo(-70,-26, -20,-28);
+  ctx.quadraticCurveTo(40,-30, 60,-10);
+  ctx.quadraticCurveTo(70,0, 40,6);
+  ctx.quadraticCurveTo(-10,14, -70,0);
+  ctx.closePath();
+  fillStroke(4.5);
+  // tail boom
+  ctx.beginPath();
+  ctx.moveTo(45,-8); ctx.lineTo(115,-18); ctx.lineTo(118,-10); ctx.lineTo(48,2); ctx.closePath();
+  fillStroke(4);
+  // tail fin
+  ctx.beginPath();
+  ctx.moveTo(105,-18); ctx.lineTo(112,-38); ctx.lineTo(120,-17); ctx.closePath();
+  fillStroke(4);
+  // main rotor
+  ctx.beginPath(); ctx.moveTo(-95,-30); ctx.lineTo(85,-30); ctx.stroke2 = 1; ctx.stroke();
+  ctx.lineWidth=4; ctx.strokeStyle=INK; ctx.stroke();
+  // mast
+  ctx.beginPath(); ctx.moveTo(-10,-28); ctx.lineTo(-10,-34); ctx.lineTo(5,-34); ctx.lineTo(5,-28);
+  ctx.lineWidth=4; ctx.stroke();
+  // skid
+  ctx.beginPath(); ctx.moveTo(-55,14); ctx.lineTo(25,14);
+  ctx.lineWidth=4; ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-45,6); ctx.lineTo(-45,16); ctx.moveTo(10,4); ctx.lineTo(10,16);
+  ctx.stroke();
+  ctx.restore();
+}
+
+/* ---------- ground line ---------- */
+function ground(){
+  ctx.beginPath();
+  ctx.setLineDash([2,2]);
+  ctx.moveTo(110, 1830); ctx.lineTo(1590,1830);
+  ctx.lineWidth = 5;
+  ctx.strokeStyle = INK;
+  ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+/* ---------- soldier ---------- */
+function soldier(){
+  const cx = 850;
+  ctx.save();
+
+  // far (left) leg
+  ctx.beginPath();
+  ctx.moveTo(cx-40, 1330);
+  ctx.lineTo(cx-150, 1340);
+  ctx.quadraticCurveTo(cx-190,1500, cx-175,1650);
+  ctx.lineTo(cx-165,1780);
+  ctx.lineTo(cx-70,1790);
+  ctx.lineTo(cx-70,1650);
+  ctx.quadraticCurveTo(cx-60,1500, cx-30,1360);
+  ctx.closePath();
+  fillStroke(7);
+  // knee pad
+  ctx.beginPath();
+  roundRectPath(ctx, cx-185, 1490, 70, 46, 14);
+  fillStroke(6);
+  // boot
+  ctx.beginPath();
+  ctx.moveTo(cx-178,1780);
+  ctx.lineTo(cx-70,1780);
+  ctx.lineTo(cx-60,1815);
+  ctx.quadraticCurveTo(cx-70,1840, cx-120,1838);
+  ctx.lineTo(cx-215,1838);
+  ctx.quadraticCurveTo(cx-232,1830, cx-210,1806);
+  ctx.closePath();
+  fillStroke(6.5);
+
+  // near (right) leg
+  ctx.beginPath();
+  ctx.moveTo(cx+30, 1330);
+  ctx.lineTo(cx+150, 1340);
+  ctx.quadraticCurveTo(cx+205,1500, cx+185,1660);
+  ctx.lineTo(cx+175,1770);
+  ctx.lineTo(cx+70,1780);
+  ctx.lineTo(cx+70,1650);
+  ctx.quadraticCurveTo(cx+55,1500, cx+15,1360);
+  ctx.closePath();
+  fillStroke(7);
+  // cargo pocket
+  ctx.beginPath();
+  roundRectPath(ctx, cx+95, 1440, 76, 90, 10);
+  fillStroke(5.5);
+  ctx.beginPath();
+  ctx.moveTo(cx+95, 1470); ctx.lineTo(cx+171,1470); strokeOnly(4);
+  // knee pad
+  ctx.beginPath();
+  roundRectPath(ctx, cx+120, 1500, 74, 48, 14);
+  fillStroke(6);
+  // boot
+  ctx.beginPath();
+  ctx.moveTo(cx+70,1770);
+  ctx.lineTo(cx+180,1770);
+  ctx.quadraticCurveTo(cx+205,1780, cx+205,1806);
+  ctx.quadraticCurveTo(cx+220,1832, cx+195,1838);
+  ctx.lineTo(cx+95,1838);
+  ctx.quadraticCurveTo(cx+60,1832, cx+70,1806);
+  ctx.closePath();
+  fillStroke(6.5);
+
+  // belt
+  ctx.beginPath();
+  roundRectPath(ctx, cx-140, 1300, 280, 50, 10);
+  fillStroke(6.5);
+  ctx.beginPath();
+  roundRectPath(ctx, cx-34, 1308, 68, 34, 6);
+  strokeOnly(4.5);
+  // hip holster
+  ctx.beginPath();
+  roundRectPath(ctx, cx+120, 1305, 60, 110, 10);
+  fillStroke(5.5);
+
+  // far arm (left, supporting handguard) - behind torso
+  ctx.beginPath();
+  ctx.moveTo(cx-110, 940);
+  ctx.quadraticCurveTo(cx-230, 990, cx-260, 1090);
+  ctx.quadraticCurveTo(cx-270, 1140, cx-230, 1160);
+  ctx.quadraticCurveTo(cx-190, 1110, cx-150, 1060);
+  ctx.quadraticCurveTo(cx-110, 1010, cx-70, 970);
+  ctx.closePath();
+  fillStroke(7);
+
+  // torso / vest
+  ctx.beginPath();
+  ctx.moveTo(cx-150, 970);
+  ctx.quadraticCurveTo(cx-165, 850, cx-120, 790);
+  ctx.lineTo(cx-95, 760);
+  ctx.quadraticCurveTo(cx, 730, cx+95, 760);
+  ctx.lineTo(cx+120, 790);
+  ctx.quadraticCurveTo(cx+165, 850, cx+150, 970);
+  ctx.quadraticCurveTo(cx+155, 1120, cx+140, 1300);
+  ctx.lineTo(cx-140, 1300);
+  ctx.quadraticCurveTo(cx-155, 1120, cx-150, 970);
+  ctx.closePath();
+  fillStroke(7.5);
+
+  // vest center zip
+  ctx.beginPath();
+  ctx.moveTo(cx, 770); ctx.lineTo(cx, 1290);
+  strokeOnly(4);
+  // chest pouches
+  [[-95, 950, 70, 90], [15, 960, 70, 100], [-40, 1080, 80, 70]].forEach(([dx,dy,w,h])=>{
+    ctx.beginPath();
+    roundRectPath(ctx, cx+dx, dy, w, h, 10);
+    fillStroke(5.5);
+  });
+  // shoulder straps
+  [-1,1].forEach(s=>{
+    ctx.beginPath();
+    roundRectPath(ctx, cx + s*95 - 22, 780, 44, 90, 14);
+    fillStroke(5.5);
+  });
+
+  // near arm (right, on grip/trigger) - in front of torso
+  ctx.beginPath();
+  ctx.moveTo(cx+100, 880);
+  ctx.quadraticCurveTo(cx+190, 900, cx+215, 990);
+  ctx.quadraticCurveTo(cx+225, 1040, cx+195, 1075);
+  ctx.quadraticCurveTo(cx+150, 1040, cx+115, 990);
+  ctx.quadraticCurveTo(cx+95, 950, cx+90, 900);
+  ctx.closePath();
+  fillStroke(7);
+  // forearm glove line
+  ctx.beginPath();
+  ctx.moveTo(cx+140, 1000); ctx.lineTo(cx+185,1035);
+  strokeOnly(4);
+
+  // rifle (drawn after arms so it sits on top)
+  ctx.save();
+  ctx.translate(cx+40, 990);
+  ctx.rotate(-0.62);
+  // stock
+  ctx.beginPath();
+  roundRectPath(ctx, -270, -22, 90, 44, 10);
+  fillStroke(6);
+  // body/receiver
+  ctx.beginPath();
+  roundRectPath(ctx, -190, -30, 220, 58, 10);
+  fillStroke(6.5);
+  // magazine
+  ctx.beginPath();
+  ctx.moveTo(-40,26); ctx.lineTo(-8,26); ctx.lineTo(-22,140); ctx.lineTo(-52,140); ctx.closePath();
+  fillStroke(6);
+  // handguard + barrel
+  ctx.beginPath();
+  roundRectPath(ctx, 28, -18, 210, 34, 8);
+  fillStroke(6);
+  ctx.beginPath();
+  ctx.moveTo(238,-8); ctx.lineTo(300,-8); ctx.lineTo(300,4); ctx.lineTo(238,4); ctx.closePath();
+  fillStroke(5);
+  // sight
+  ctx.beginPath();
+  roundRectPath(ctx, -20, -58, 60, 30, 6);
+  fillStroke(5);
+  // grip
+  ctx.beginPath();
+  ctx.moveTo(-90,26); ctx.lineTo(-60,26); ctx.lineTo(-72,100); ctx.lineTo(-100,92); ctx.closePath();
+  fillStroke(5.5);
+  ctx.restore();
+
+  // neck
+  ctx.beginPath();
+  roundRectPath(ctx, cx-38, 700, 76, 60, 10);
+  fillStroke(6.5);
+
+  // head + helmet
+  ctx.beginPath();
+  ctx.moveTo(cx-95, 700);
+  ctx.quadraticCurveTo(cx-100, 590, cx, 570);
+  ctx.quadraticCurveTo(cx+100, 590, cx+95, 700);
+  ctx.quadraticCurveTo(cx+95, 745, cx+55, 758);
+  ctx.lineTo(cx-55, 758);
+  ctx.quadraticCurveTo(cx-95, 745, cx-95, 700);
+  ctx.closePath();
+  fillStroke(7.5);
+  // helmet brim
+  ctx.beginPath();
+  ctx.moveTo(cx-98, 660);
+  ctx.quadraticCurveTo(cx, 630, cx+98, 660);
+  strokeOnly(5.5);
+  // goggles
+  ctx.beginPath();
+  roundRectPath(ctx, cx-78, 668, 62, 40, 12);
+  fillStroke(5);
+  ctx.beginPath();
+  roundRectPath(ctx, cx+16, 668, 62, 40, 12);
+  fillStroke(5);
+  ctx.beginPath();
+  ctx.moveTo(cx-16,688); ctx.lineTo(cx+16,688);
+  strokeOnly(4);
+  // side rail / mount
+  ctx.beginPath();
+  roundRectPath(ctx, cx-30, 578, 60, 26, 6);
+  fillStroke(5);
+  // chin strap
+  ctx.beginPath();
+  ctx.moveTo(cx-55,730); ctx.quadraticCurveTo(cx,758, cx+55,730);
+  strokeOnly(4.5);
+
+  ctx.restore();
+}
+
+/* ---------- PS5 console ---------- */
+function console5(){
+  const x = 300, y = 1900;
+  ctx.save();
+  ctx.translate(x,y);
+  // base stand
+  ctx.beginPath();
+  roundRectPath(ctx, -95, 128, 190, 26, 8);
+  fillStroke(6);
+  // left wing
+  ctx.beginPath();
+  ctx.moveTo(-16,-150);
+  ctx.quadraticCurveTo(-105,-160, -132,-95);
+  ctx.quadraticCurveTo(-148,-30, -128,40);
+  ctx.quadraticCurveTo(-118,90, -95,120);
+  ctx.quadraticCurveTo(-70,138, -40,130);
+  ctx.lineTo(-8,128);
+  ctx.quadraticCurveTo(-18,-10, -16,-150);
+  ctx.closePath();
+  fillStroke(6.5);
+  // right wing
+  ctx.beginPath();
+  ctx.moveTo(16,-150);
+  ctx.quadraticCurveTo(105,-160, 132,-95);
+  ctx.quadraticCurveTo(148,-30, 128,40);
+  ctx.quadraticCurveTo(118,90, 95,120);
+  ctx.quadraticCurveTo(70,138, 40,130);
+  ctx.lineTo(8,128);
+  ctx.quadraticCurveTo(18,-10, 16,-150);
+  ctx.closePath();
+  fillStroke(6.5);
+  // center seam body
+  ctx.beginPath();
+  roundRectPath(ctx, -14, -142, 28, 272, 6);
+  fillStroke(5.5);
+  // vents
+  for(let i=0;i<4;i++){
+    ctx.beginPath();
+    ctx.moveTo(-95+i*6, -60+i*2);
+    ctx.lineTo(-95+i*6, 40+i*2);
+    strokeOnly(3);
+    ctx.beginPath();
+    ctx.moveTo(95-i*6, -60+i*2);
+    ctx.lineTo(95-i*6, 40+i*2);
+    strokeOnly(3);
+  }
+  // disc slot
+  ctx.beginPath();
+  roundRectPath(ctx, -8, -130, 16, 60, 4);
+  strokeOnly(4);
+  ctx.restore();
+}
+
+/* ---------- DualSense controller ---------- */
+function controller(){
+  const x = 1370, y = 1870;
+  ctx.save();
+  ctx.translate(x,y);
+  // body
+  ctx.beginPath();
+  ctx.moveTo(-190, -20);
+  ctx.quadraticCurveTo(-190, -70, -110, -78);
+  ctx.quadraticCurveTo(-40,-90, 0,-88);
+  ctx.quadraticCurveTo(40,-90, 110,-78);
+  ctx.quadraticCurveTo(190,-70, 190,-20);
+  ctx.quadraticCurveTo(200, 40, 150, 80);
+  ctx.quadraticCurveTo(110, 108, 80, 78);
+  ctx.quadraticCurveTo(50, 40, 0, 38);
+  ctx.quadraticCurveTo(-50, 40, -80, 78);
+  ctx.quadraticCurveTo(-110, 108, -150, 80);
+  ctx.quadraticCurveTo(-200, 40, -190, -20);
+  ctx.closePath();
+  fillStroke(7);
+  // touchpad
+  ctx.beginPath();
+  roundRectPath(ctx, -70, -66, 140, 46, 10);
+  fillStroke(5.5);
+  // light bar
+  ctx.beginPath();
+  roundRectPath(ctx, -70, -78, 140, 8, 4);
+  strokeOnly(3.5);
+  // left stick
+  ctx.beginPath();
+  ctx.arc(-78, 0, 34, 0, Math.PI*2);
+  fillStroke(6);
+  ctx.beginPath();
+  ctx.arc(-78, 0, 14, 0, Math.PI*2);
+  strokeOnly(3.5);
+  // right stick
+  ctx.beginPath();
+  ctx.arc(30, 40, 34, 0, Math.PI*2);
+  fillStroke(6);
+  ctx.beginPath();
+  ctx.arc(30, 40, 14, 0, Math.PI*2);
+  strokeOnly(3.5);
+  // dpad
+  ctx.save();
+  ctx.translate(-30, -30);
+  [[0,-24,14,22],[0,24,14,22],[-24,0,22,14],[24,0,22,14]].forEach(([dx,dy,w,h])=>{
+    ctx.beginPath();
+    roundRectPath(ctx, dx-w/2, dy-h/2, w, h, 4);
+    fillStroke(4);
+  });
+  ctx.restore();
+  // face buttons
+  ctx.save();
+  ctx.translate(115, -10);
+  const r = 13;
+  // triangle (top)
+  ctx.beginPath();
+  ctx.moveTo(0,-36); ctx.lineTo(0-r,-36+r*1.7); ctx.lineTo(0+r,-36+r*1.7); ctx.closePath();
+  strokeOnly(4);
+  // circle (right)
+  ctx.beginPath(); ctx.arc(26,0,r,0,Math.PI*2); strokeOnly(4);
+  // x (bottom)
+  ctx.beginPath();
+  ctx.moveTo(0-8,26-8); ctx.lineTo(0+8,26+8);
+  ctx.moveTo(0+8,26-8); ctx.lineTo(0-8,26+8);
+  strokeOnly(4);
+  ctx.beginPath(); ctx.arc(0,26,r,0,Math.PI*2); strokeOnly(3);
+  // square (left)
+  ctx.beginPath();
+  roundRectPath(ctx, -26-11,-11, 22,22, 3);
+  strokeOnly(4);
+  ctx.restore();
+  // grip shading lines
+  [[-150,60],[130,60]].forEach(([gx,gy])=>{
+    ctx.beginPath();
+    ctx.moveTo(gx-14,gy-10); ctx.lineTo(gx+14,gy+16);
+    strokeOnly(3);
+  });
+  ctx.restore();
+}
+
+/* ---------- shell casings + dog tags ---------- */
+function shells(){
+  const spots = [[640,1900,-0.3],[705,1925,0.5],[970,1918,-0.5],[1030,1895,0.25]];
+  spots.forEach(([sx,sy,rot])=>{
+    ctx.save();
+    ctx.translate(sx,sy); ctx.rotate(rot);
+    ctx.beginPath();
+    roundRectPath(ctx, -12, -34, 24, 60, 8);
+    fillStroke(4.5);
+    ctx.beginPath();
+    ctx.moveTo(-12,-34); ctx.lineTo(12,-34);
+    strokeOnly(3);
+    ctx.restore();
+  });
+}
+
+function dogTags(){
+  const cx = 850, cy = 1930;
+  ctx.save();
+  ctx.translate(cx,cy);
+  // chain (beads along a shallow arc)
+  for(let i=-5;i<=5;i++){
+    const bx = i*13;
+    const by = -34 - (25 - Math.abs(i)*4.4);
+    ctx.beginPath();
+    ctx.arc(bx, by, 5, 0, Math.PI*2);
+    ctx.lineWidth = 3;
+    ctx.strokeStyle = INK;
+    ctx.stroke();
+  }
+  // tag 1
+  ctx.save();
+  ctx.rotate(-0.12);
+  ctx.beginPath();
+  roundRectPath(ctx, -46, -14, 70, 96, 16);
+  fillStroke(5.5);
+  ctx.beginPath();
+  ctx.arc(-11,-4,7,0,Math.PI*2);
+  strokeOnly(3.5);
+  ctx.restore();
+  // tag 2
+  ctx.save();
+  ctx.rotate(0.14);
+  ctx.beginPath();
+  roundRectPath(ctx, -14, -6, 70, 96, 16);
+  fillStroke(5.5);
+  ctx.beginPath();
+  ctx.arc(21,4,7,0,Math.PI*2);
+  strokeOnly(3.5);
+  // engraved lines
+  [26,44,62].forEach(dy=>{
+    ctx.beginPath();
+    ctx.moveTo(2, dy); ctx.lineTo(48, dy);
+    strokeOnly(3);
+  });
+  ctx.restore();
+  ctx.restore();
+}
+
+/* ---------- compose ---------- */
+cropMarks();
+titleBanner();
+cloud(260, 420, 1.0);
+cloud(1360, 470, 0.85);
+helicopter(1195, 560, 0.95);
+ground();
+console5();
+controller();
+shells();
+dogTags();
+soldier();
+
+</script>
