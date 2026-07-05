@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 620" width="980" height="620" font-family="Inter, Arial, sans-serif">
+<text x="210.00" y="26.00" font-size="1" font-weight="600" fill="#0F3D5C" text-anchor="start"></text>
+<rect x="60" y="40" width="300" height="540" fill="#FFFFFF" stroke="#1C2B33" stroke-width="3"/>
+<text x="74.00" y="74.00" font-size="27" font-weight="800" fill="#1C2B33" text-anchor="start">Nutrition Facts</text>
+<line x1="70.00" y1="88.00" x2="350.00" y2="88.00" stroke="#1C2B33" stroke-width="1"/>
+<text x="74.00" y="108.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="start">8 servings per container</text>
+<text x="74.00" y="128.00" font-size="15" font-weight="800" fill="#1C2B33" text-anchor="start">Serving size</text>
+<text x="346.00" y="128.00" font-size="15" font-weight="800" fill="#1C2B33" text-anchor="end">2/3 cup (55g)</text>
+<rect x="60" y="138" width="300" height="8" fill="#1C2B33"/>
+<text x="74.00" y="164.00" font-size="12" font-weight="600" fill="#1C2B33" text-anchor="start">Amount per serving</text>
+<text x="74.00" y="194.00" font-size="24" font-weight="800" fill="#1C2B33" text-anchor="start">Calories</text>
+<text x="346.00" y="194.00" font-size="28" font-weight="800" fill="#1C2B33" text-anchor="end">230</text>
+<rect x="60" y="204" width="300" height="5" fill="#1C2B33"/>
+<text x="346.00" y="222.00" font-size="11" font-weight="800" fill="#1C2B33" text-anchor="end">% Daily Value*</text>
+<line x1="70.00" y1="230.00" x2="350.00" y2="230.00" stroke="#1C2B33" stroke-width="1"/>
+<text x="74.00" y="250.00" font-size="12.5" font-weight="800" fill="#1C2B33" text-anchor="start">Total Fat 8g</text>
+<text x="346.00" y="250.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">10%</text>
+<line x1="70.00" y1="256.00" x2="350.00" y2="256.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="276.00" font-size="12.5" font-weight="500" fill="#1C2B33" text-anchor="start">  Saturated Fat 1g</text>
+<text x="346.00" y="276.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">5%</text>
+<line x1="70.00" y1="282.00" x2="350.00" y2="282.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="302.00" font-size="12.5" font-weight="500" fill="#1C2B33" text-anchor="start">  Trans Fat 0g</text>
+<line x1="70.00" y1="308.00" x2="350.00" y2="308.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="328.00" font-size="12.5" font-weight="800" fill="#1C2B33" text-anchor="start">Cholesterol 0mg</text>
+<text x="346.00" y="328.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">0%</text>
+<line x1="70.00" y1="334.00" x2="350.00" y2="334.00" stroke="#DDDDDD" stroke-width="1"/>
+<rect x="62" y="340" width="296" height="19" fill="#E8F2FA"/>
+<text x="74.00" y="354.00" font-size="12.5" font-weight="800" fill="#1C2B33" text-anchor="start">Sodium 160mg</text>
+<text x="346.00" y="354.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">7%</text>
+<line x1="70.00" y1="360.00" x2="350.00" y2="360.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="380.00" font-size="12.5" font-weight="800" fill="#1C2B33" text-anchor="start">Total Carbohydrate 37g</text>
+<text x="346.00" y="380.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">13%</text>
+<line x1="70.00" y1="386.00" x2="350.00" y2="386.00" stroke="#DDDDDD" stroke-width="1"/>
+<rect x="62" y="392" width="296" height="19" fill="#E8F2FA"/>
+<text x="74.00" y="406.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="start">  Dietary Fiber 4g</text>
+<text x="346.00" y="406.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">14%</text>
+<line x1="70.00" y1="412.00" x2="350.00" y2="412.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="432.00" font-size="12.5" font-weight="500" fill="#1C2B33" text-anchor="start">  Total Sugars 12g</text>
+<line x1="70.00" y1="438.00" x2="350.00" y2="438.00" stroke="#DDDDDD" stroke-width="1"/>
+<rect x="62" y="444" width="296" height="19" fill="#E8F2FA"/>
+<text x="74.00" y="458.00" font-size="12.5" font-weight="500" fill="#1C2B33" text-anchor="start">    Includes 10g Added Sugars</text>
+<text x="346.00" y="458.00" font-size="12.5" font-weight="700" fill="#1C2B33" text-anchor="end">20%</text>
+<line x1="70.00" y1="464.00" x2="350.00" y2="464.00" stroke="#DDDDDD" stroke-width="1"/>
+<text x="74.00" y="484.00" font-size="12.5" font-weight="800" fill="#1C2B33" text-anchor="start">Protein 3g</text>
+<line x1="70.00" y1="490.00" x2="350.00" y2="490.00" stroke="#DDDDDD" stroke-width="1"/>
+<line x1="70.00" y1="506.00" x2="350.00" y2="506.00" stroke="#1C2B33" stroke-width="4"/>
+<text x="74.00" y="524.00" font-size="11.5" font-weight="500" fill="#1C2B33" text-anchor="start">Vitamin D 2mcg 10%</text>
+<text x="74.00" y="541.00" font-size="11.5" font-weight="500" fill="#1C2B33" text-anchor="start">Calcium 260mg 20%</text>
+<text x="74.00" y="558.00" font-size="11.5" font-weight="500" fill="#1C2B33" text-anchor="start">Iron 8mg 45%</text>
+<text x="74.00" y="575.00" font-size="11.5" font-weight="500" fill="#1C2B33" text-anchor="start">Potassium 240mg 6%</text>
+<line x1="360.00" y1="110.00" x2="410.00" y2="110.00" stroke="#1B6CA8" stroke-width="1.5"/>
+<circle cx="360.00" cy="110.00" r="4.00" fill="#1B6CA8"/>
+<text x="420.00" y="104.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="start">Check the serving size first —</text>
+<text x="420.00" y="124.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="start">all numbers on the label are per serving.</text>
+<line x1="360.00" y1="312.00" x2="410.00" y2="312.00" stroke="#1B6CA8" stroke-width="1.5"/>
+<circle cx="360.00" cy="312.00" r="4.00" fill="#1B6CA8"/>
+<text x="420.00" y="306.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="start">% Daily Value shows how much</text>
+<text x="420.00" y="326.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="start">one serving contributes to a full day (based on 2,000 calories).</text>
+<line x1="360.00" y1="445.00" x2="410.00" y2="445.00" stroke="#1B6CA8" stroke-width="1.5"/>
+<circle cx="360.00" cy="445.00" r="4.00" fill="#1B6CA8"/>
+<text x="420.00" y="439.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="start">Added sugars, sodium &amp; saturated fat:</text>
+<text x="420.00" y="459.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="start">choose foods with lower % Daily Value more often.</text>
+<line x1="360.00" y1="360.00" x2="410.00" y2="360.00" stroke="#1B6CA8" stroke-width="1.5"/>
+<circle cx="360.00" cy="360.00" r="4.00" fill="#1B6CA8"/>
+<text x="420.00" y="354.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="start">Fiber: aim for 25–38g a day —</text>
+<text x="420.00" y="374.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="start">look for 3g+ of fiber per serving.</text>
+<text x="210.00" y="22.00" font-size="20" font-weight="800" fill="#0F3D5C" text-anchor="middle">READ THE LABEL</text>
+</svg>
