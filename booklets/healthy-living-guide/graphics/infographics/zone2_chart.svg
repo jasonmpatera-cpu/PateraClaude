@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" width="980" height="420" font-family="Inter, Arial, sans-serif">
+<text x="490.00" y="40.00" font-size="23" font-weight="800" fill="#0F3D5C" text-anchor="middle">UNDERSTANDING YOUR EXERCISE ZONES</text>
+<rect x="60.0" y="150" width="166.0" height="90" fill="#CFE8F5"/>
+<text x="143.00" y="184.00" font-size="17" font-weight="800" fill="#1C2B33" text-anchor="middle">Zone 1</text>
+<text x="143.00" y="208.00" font-size="15" font-weight="700" fill="#1C2B33" text-anchor="middle">50–60%</text>
+<text x="143.00" y="262.00" font-size="13" font-weight="600" fill="#4B5F68" text-anchor="middle">Very light</text>
+<rect x="232.0" y="150" width="166.0" height="90" fill="#7FC4E8"/>
+<text x="315.00" y="184.00" font-size="17" font-weight="800" fill="#1C2B33" text-anchor="middle">Zone 2</text>
+<text x="315.00" y="208.00" font-size="15" font-weight="700" fill="#1C2B33" text-anchor="middle">60–70%</text>
+<text x="315.00" y="262.00" font-size="13" font-weight="600" fill="#4B5F68" text-anchor="middle">Light — easy pace</text>
+<rect x="404.0" y="150" width="166.0" height="90" fill="#1B6CA8"/>
+<text x="487.00" y="184.00" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle">Zone 3</text>
+<text x="487.00" y="208.00" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">70–80%</text>
+<text x="487.00" y="262.00" font-size="13" font-weight="600" fill="#4B5F68" text-anchor="middle">Moderate</text>
+<rect x="576.0" y="150" width="166.0" height="90" fill="#0F3D5C"/>
+<text x="659.00" y="184.00" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle">Zone 4</text>
+<text x="659.00" y="208.00" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">80–90%</text>
+<text x="659.00" y="262.00" font-size="13" font-weight="600" fill="#4B5F68" text-anchor="middle">Hard</text>
+<rect x="748.0" y="150" width="166.0" height="90" fill="#0A2A40"/>
+<text x="831.00" y="184.00" font-size="17" font-weight="800" fill="#FFFFFF" text-anchor="middle">Zone 5</text>
+<text x="831.00" y="208.00" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle">90–100%</text>
+<text x="831.00" y="262.00" font-size="13" font-weight="600" fill="#4B5F68" text-anchor="middle">Maximum effort</text>
+<path d="M242.0,130 h140 v-34 l-14,20 h-112 l-14,20 Z" fill="#E8F2FA" stroke="#1B6CA8" stroke-width="2"/>
+<text x="312.00" y="92.00" font-size="13.5" font-weight="700" fill="#0F3D5C" text-anchor="middle">Zone 2 is your fat-burning,</text>
+<text x="312.00" y="109.00" font-size="13.5" font-weight="700" fill="#0F3D5C" text-anchor="middle">endurance-building sweet spot</text>
+<rect x="60.00" y="300.00" width="860.00" height="70.00" rx="10" fill="#E6F6F0"/>
+<text x="90.00" y="328.00" font-size="15.5" font-weight="800" fill="#128074" text-anchor="start">The Talk Test</text>
+<text x="90.00" y="350.00" font-size="13.5" font-weight="500" fill="#1C2B33" text-anchor="start">In Zone 2, you can comfortably hold a conversation but couldn't sing.</text>
+<text x="90.00" y="368.00" font-size="13.5" font-weight="500" fill="#1C2B33" text-anchor="start">If you're too breathless to talk, slow down.</text>
+</svg>

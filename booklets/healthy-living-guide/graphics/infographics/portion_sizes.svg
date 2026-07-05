@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 400" width="980" height="400" font-family="Inter, Arial, sans-serif">
+<text x="490.00" y="40.00" font-size="22" font-weight="800" fill="#0F3D5C" text-anchor="middle">PORTION SIZES — NO SCALE NEEDED</text>
+<circle cx="152.50" cy="150.00" r="78.00" fill="#F7FAFB" stroke="#0F3D5C" stroke-width="2.5"/>
+<rect x="118.50" y="130.00" width="68.00" height="54.00" rx="14" fill="#0F3D5C"/>
+<rect x="120.50" y="96.00" width="13.00" height="40.00" rx="6" fill="#0F3D5C"/>
+<rect x="137.50" y="96.00" width="13.00" height="40.00" rx="6" fill="#0F3D5C"/>
+<rect x="154.50" y="96.00" width="13.00" height="40.00" rx="6" fill="#0F3D5C"/>
+<rect x="171.50" y="96.00" width="13.00" height="40.00" rx="6" fill="#0F3D5C"/>
+<text x="152.50" y="250.00" font-size="15" font-weight="800" fill="#0F3D5C" text-anchor="middle">PROTEIN</text>
+<text x="152.50" y="272.00" font-size="13.5" font-weight="700" fill="#1C2B33" text-anchor="middle">Palm-sized</text>
+<text x="152.50" y="294.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">3–4 oz cooked meat,</text>
+<text x="152.50" y="310.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">poultry, or fish</text>
+<circle cx="377.50" cy="150.00" r="78.00" fill="#F7FAFB" stroke="#1E9E6B" stroke-width="2.5"/>
+<circle cx="377.50" cy="152.00" r="40.00" fill="#1E9E6B"/>
+<text x="377.50" y="250.00" font-size="15" font-weight="800" fill="#1E9E6B" text-anchor="middle">VEGETABLES</text>
+<text x="377.50" y="272.00" font-size="13.5" font-weight="700" fill="#1C2B33" text-anchor="middle">Fist-sized</text>
+<text x="377.50" y="294.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">About 1 cup raw</text>
+<text x="377.50" y="310.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">or cooked vegetables</text>
+<circle cx="602.50" cy="150.00" r="78.00" fill="#F7FAFB" stroke="#1B6CA8" stroke-width="2.5"/>
+<path d="M560.5,140 Q602.5,200 644.5,140 L636.5,130 Q602.5,170 568.5,130 Z" fill="#1B6CA8"/>
+<text x="602.50" y="250.00" font-size="15" font-weight="800" fill="#1B6CA8" text-anchor="middle">CARBOHYDRATES</text>
+<text x="602.50" y="272.00" font-size="13.5" font-weight="700" fill="#1C2B33" text-anchor="middle">Cupped hand</text>
+<text x="602.50" y="294.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">1/2–1 cup rice, pasta,</text>
+<text x="602.50" y="310.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">potato, or fruit</text>
+<circle cx="827.50" cy="150.00" r="78.00" fill="#F7FAFB" stroke="#C97A1A" stroke-width="2.5"/>
+<rect x="811.50" y="150.00" width="32.00" height="46.00" rx="12" fill="#C97A1A"/>
+<circle cx="827.50" cy="138.00" r="17.00" fill="#C97A1A"/>
+<text x="827.50" y="250.00" font-size="15" font-weight="800" fill="#C97A1A" text-anchor="middle">FATS &amp; OILS</text>
+<text x="827.50" y="272.00" font-size="13.5" font-weight="700" fill="#1C2B33" text-anchor="middle">Thumb-sized</text>
+<text x="827.50" y="294.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">1–2 tablespoons oil, butter,</text>
+<text x="827.50" y="310.00" font-size="12" font-weight="500" fill="#4B5F68" text-anchor="middle">or nut butter</text>
+</svg>

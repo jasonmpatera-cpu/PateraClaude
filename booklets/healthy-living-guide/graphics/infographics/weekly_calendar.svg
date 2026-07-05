@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 980 420" width="980" height="420" font-family="Inter, Arial, sans-serif">
+<text x="490.00" y="40.00" font-size="23" font-weight="800" fill="#0F3D5C" text-anchor="middle">A SAMPLE BALANCED WEEK</text>
+<rect x="60.00" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="116.43" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">MON</text>
+<rect x="70.00" y="146.00" width="92.86" height="46.00" rx="8" fill="#1B6CA8"/>
+<text x="116.43" y="174.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Strength</text>
+<rect x="182.86" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="239.29" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">TUE</text>
+<rect x="192.86" y="146.00" width="92.86" height="46.00" rx="8" fill="#5FA8D3"/>
+<text x="239.29" y="166.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Zone</text>
+<text x="239.29" y="182.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">2 cardio</text>
+<rect x="192.86" y="204.00" width="92.86" height="46.00" rx="8" fill="#1E9E6B"/>
+<text x="239.29" y="232.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Walk</text>
+<rect x="305.71" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="362.14" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">WED</text>
+<rect x="315.71" y="146.00" width="92.86" height="46.00" rx="8" fill="#128074"/>
+<text x="362.14" y="174.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Mobility</text>
+<rect x="315.71" y="204.00" width="92.86" height="46.00" rx="8" fill="#1E9E6B"/>
+<text x="362.14" y="232.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Walk</text>
+<rect x="428.57" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="485.00" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">THU</text>
+<rect x="438.57" y="146.00" width="92.86" height="46.00" rx="8" fill="#1B6CA8"/>
+<text x="485.00" y="174.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Strength</text>
+<rect x="551.43" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="607.86" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">FRI</text>
+<rect x="561.43" y="146.00" width="92.86" height="46.00" rx="8" fill="#5FA8D3"/>
+<text x="607.86" y="166.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Zone</text>
+<text x="607.86" y="182.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">2 cardio</text>
+<rect x="561.43" y="204.00" width="92.86" height="46.00" rx="8" fill="#1E9E6B"/>
+<text x="607.86" y="232.00" font-size="12.5" font-weight="700" fill="#FFFFFF" text-anchor="middle">Walk</text>
+<rect x="674.29" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="730.71" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">SAT</text>
+<rect x="684.29" y="146.00" width="92.86" height="46.00" rx="8" fill="#1E9E6B"/>
+<text x="730.71" y="166.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Active</text>
+<text x="730.71" y="182.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">fun</text>
+<rect x="797.14" y="90.00" width="112.86" height="280.00" rx="10" fill="#F7FAFB" stroke="#D7E4E8" stroke-width="1.5"/>
+<text x="853.57" y="120.00" font-size="14.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">SUN</text>
+<rect x="807.14" y="146.00" width="92.86" height="46.00" rx="8" fill="#4B5F68"/>
+<text x="853.57" y="166.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">Rest</text>
+<text x="853.57" y="182.00" font-size="12" font-weight="700" fill="#FFFFFF" text-anchor="middle">&amp; stretch</text>
+<text x="490.00" y="400.00" font-size="13" font-weight="500" fill="#4B5F68" text-anchor="middle">Any order works — the goal is consistency across the week, not perfection on any single day.</text>
+</svg>

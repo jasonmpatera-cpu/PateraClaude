@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 620" width="900" height="620" font-family="Inter, Arial, sans-serif">
+<text x="450.00" y="42.00" font-size="23" font-weight="800" fill="#0F3D5C" text-anchor="middle">SHOP THE HEALTHY CART</text>
+
+    <g transform="translate(356.5,170) scale(11)" stroke="#0F3D5C" stroke-width="1.7" fill="none" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M2.6 3.6 H5 L7.4 15.4 H18.2 L20.4 7.2 H6.4"/>
+      <circle cx="9" cy="19.4" r="1.4"/>
+      <circle cx="16.4" cy="19.4" r="1.4"/>
+    </g>
+<line x1="360.00" y1="260.00" x2="210.00" y2="150.00" stroke="#D7E4E8" stroke-width="2"/>
+<rect x="40.00" y="86.00" width="220.00" height="92.00" rx="10" fill="#FFFFFF" stroke="#1E9E6B" stroke-width="2"/>
+<text x="150.00" y="114.00" font-size="16.5" font-weight="800" fill="#1E9E6B" text-anchor="middle">PRODUCE</text>
+<text x="150.00" y="136.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">Fresh &amp; frozen vegetables,</text>
+<text x="150.00" y="153.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">fruit — fill your cart first</text>
+<line x1="540.00" y1="260.00" x2="690.00" y2="150.00" stroke="#D7E4E8" stroke-width="2"/>
+<rect x="640.00" y="86.00" width="220.00" height="92.00" rx="10" fill="#FFFFFF" stroke="#0F3D5C" stroke-width="2"/>
+<text x="750.00" y="114.00" font-size="16.5" font-weight="800" fill="#0F3D5C" text-anchor="middle">PROTEIN</text>
+<text x="750.00" y="136.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">Poultry, fish, eggs, beans,</text>
+<text x="750.00" y="153.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">lentils, tofu, Greek yogurt</text>
+<line x1="360.00" y1="340.00" x2="210.00" y2="500.00" stroke="#D7E4E8" stroke-width="2"/>
+<rect x="40.00" y="436.00" width="220.00" height="92.00" rx="10" fill="#FFFFFF" stroke="#128074" stroke-width="2"/>
+<text x="150.00" y="464.00" font-size="16.5" font-weight="800" fill="#128074" text-anchor="middle">WHOLE GRAINS</text>
+<text x="150.00" y="486.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">Oats, brown rice, quinoa,</text>
+<text x="150.00" y="503.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">100% whole-wheat bread</text>
+<line x1="540.00" y1="340.00" x2="690.00" y2="500.00" stroke="#D7E4E8" stroke-width="2"/>
+<rect x="640.00" y="436.00" width="220.00" height="92.00" rx="10" fill="#FFFFFF" stroke="#C97A1A" stroke-width="2"/>
+<text x="750.00" y="464.00" font-size="16.5" font-weight="800" fill="#C97A1A" text-anchor="middle">HEALTHY FATS</text>
+<text x="750.00" y="486.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">Olive oil, nuts, seeds,</text>
+<text x="750.00" y="503.00" font-size="13" font-weight="500" fill="#1C2B33" text-anchor="middle">avocado</text>
+</svg>
