@@ -1,2 +1,71 @@
-# PateraClaude
-My first Claude repository
+# PREVENT Risk Suite
+
+A personal clinical tool that:
+
+1. Takes a **photo of a lab report** and/or **free-text / dictated notes** (in any order, any format) and parses them into structured patient data — **entirely in your browser, for free**. No server, no API key, no per-use cost.
+2. Calculates **10- and 30-year risk of total CVD, ASCVD, and heart failure** using the **AHA PREVENT equations** (Khan et al., *Circulation* 2024), the same model used by the [official AHA PREVENT calculator](https://professional.heart.org/en/guidelines-and-statements/prevent-calculator). Automatically upgrades to the HbA1c- and/or urine-ACR-enhanced equations when those labs are available, matching the official tool's behavior.
+3. Generates **guideline-based treatment recommendations** from the calculated risk and inputs: 2018 AHA/ACC lipid guideline, 2017/2025 AHA/ACC hypertension guideline, 2022 AHA/ACC/HFSA heart failure guideline, and the 2023 AHA Cardiovascular-Kidney-Metabolic (CKM) health staging.
+
+Unless a field is explicitly stated otherwise (in the image or the dictated text), the tool assumes **no diabetes, no antihypertensive medication, and no statin** — per the default assumption requested for this tool.
+
+⚠️ **For clinical decision support only.** This is not a medical device and has not been validated for clinical use. Always verify extracted data and recommendations independently.
+
+## Why no AI / API key
+
+An earlier version of this tool called the Claude API to read the lab photo and parse dictated notes. That costs money per use and requires an Anthropic API key. Since this is built for personal, one-user use, extraction is now done **entirely with local pattern matching and in-browser OCR** — zero marginal cost, works offline after the first load, and nothing about the patient data ever leaves your machine. The tradeoff: it's less flexible than an LLM about messy handwriting, unusual report layouts, or phrasing it hasn't seen — which is exactly why the app always makes you review and confirm every field before calculating anything.
+
+## How it's built
+
+- **Calculation engine** (`client/src/lib/prevent.js`, `preventCoefficients.js`) — pure, deterministic JavaScript. Coefficients were pulled directly from the peer-reviewed reference implementation [`bcjaeger/PooledCohort`](https://github.com/bcjaeger/PooledCohort) (`equation_version = "Khan_2023"`), which is validated against the official AHA calculator. The engine was checked against the package's own published test cases (all outcomes, both sexes, base/HbA1c/ACR/full model tiers, 10- and 30-year horizons, including edge cases) and matches to the published precision.
+- **Guideline recommendations** (`client/src/lib/guidelines.js`) — deterministic rule engine referencing the cited guidelines directly; not LLM-generated, so the treatment logic is fixed and auditable.
+- **Text parsing** (`client/src/lib/textParser.js`) — a local, regex/keyword-based parser tuned for common lab abbreviations, units (including mmol/L and µmol/L conversion), and dictation phrasing (including negation, e.g. "no diabetes," "former smoker"). Runs synchronously, no network calls.
+- **Photo OCR** (`client/src/lib/ocr.js`) — [Tesseract.js](https://github.com/naptha/tesseract.js), a WebAssembly OCR engine that runs fully in the browser. The recognized text is fed through the same parser used for dictated notes. The first OCR run in a browser session downloads the English language model (a few MB, from Tesseract.js's default CDN) and the browser caches it after that.
+- **Voice dictation** (`client/src/components/ProseInput.jsx`) uses the browser's built-in Web Speech API (Chrome/Edge) — also free, also no server round-trip.
+
+## What the parser can and can't do
+
+It looks for labeled values (`"TC 210"`, `"total cholesterol 210"`, `"HDL: 45 mg/dL"`, `"A1c 7.2%"`, `"BP 148/92"`, `"5'10\", 210 lbs"`, etc.), common drug names (statins, antihypertensives, diabetes medications) to infer therapy status, and negation phrasing ("no diabetes," "denies smoking," "former smoker," "not on any statin"). It handles input in any order and mixed shorthand/prose.
+
+It will **not** reliably handle: handwritten notes photographed poorly, lab report layouts where the value is in a table column far from its label, or phrasing/abbreviations it hasn't been taught. When a field isn't found, it's simply left blank in the form for you to fill in — nothing is guessed.
+
+## Setup
+
+Requires Node 18+.
+
+```bash
+npm run install:all
+npm run dev
+```
+
+Open `http://localhost:5173`. That's it — no environment variables, no accounts.
+
+## Production build
+
+```bash
+npm run build     # builds client/dist — a static site, deployable anywhere
+npm run preview   # serve the production build locally to sanity-check it
+```
+
+Since everything runs client-side, `client/dist` can be hosted on any static host (GitHub Pages, Netlify, Vercel, or just opened locally) with no backend at all.
+
+## Project structure
+
+```
+client/
+  src/lib/prevent.js              PREVENT risk calculation engine
+  src/lib/preventCoefficients.js  AHA PREVENT model coefficients (base/HbA1c/ACR/full, 10y/30y)
+  src/lib/guidelines.js           Guideline-based recommendation rules
+  src/lib/textParser.js           Local regex/keyword parser for dictated notes and OCR text
+  src/lib/ocr.js                  In-browser OCR (Tesseract.js) for lab-report photos
+  src/lib/formMapping.js          Form <-> parsed-data <-> calculator-input mapping
+  src/components/                 UI components (image upload, dictation, form, results)
+```
+
+## Guideline sources
+
+- 2018 AHA/ACC/Multi-Society Guideline on the Management of Blood Cholesterol (*Circulation*. 2019;139:e1082-e1143)
+- 2017 ACC/AHA/... Guideline for Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults (*Hypertension*. 2018;71:e13-e115), referencing the 2025 AHA/ACC blood-pressure risk-assessment scientific statement
+- 2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure (*Circulation*. 2022;145:e895-e1032)
+- 2023 AHA Scientific Statement / Presidential Advisory on Cardiovascular-Kidney-Metabolic (CKM) Health (*Circulation*. 2023;148:1606-1635 and 148:1982-2004)
+
+Numeric ASCVD risk thresholds (5% / 7.5% / 20%) used for statin and BP treatment decisions originate from the older Pooled Cohort Equations. PREVENT tends to produce lower absolute risk estimates for the same patient, and AHA/ACC have not yet published a final, formally recalibrated set of PREVENT-specific treatment thresholds — the app surfaces this caveat directly in its recommendations.
