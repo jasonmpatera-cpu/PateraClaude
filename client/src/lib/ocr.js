@@ -32,12 +32,17 @@ function withTimeout(promise, ms, message) {
   return Promise.race([promise, timeout]).finally(() => clearTimeout(timer));
 }
 
+// import.meta.env.BASE_URL reflects Vite's configured `base` (e.g. "/" in
+// dev, "/PateraClaude/" when built for GitHub Pages), so these self-hosted
+// assets resolve correctly wherever the app is served from.
+const assetUrl = (path) => `${import.meta.env.BASE_URL}${path}`.replace(/\/{2,}/g, "/");
+
 function getWorker() {
   if (!workerPromise) {
     workerPromise = withTimeout(
       createWorker("eng", 1, {
-        workerPath: "/tesseract/worker.min.js",
-        corePath: "/tesseract/tesseract-core-simd-lstm.wasm.js"
+        workerPath: assetUrl("tesseract/worker.min.js"),
+        corePath: assetUrl("tesseract/tesseract-core-simd-lstm.wasm.js")
       }),
       INIT_TIMEOUT_MS,
       TIMEOUT_MESSAGE
