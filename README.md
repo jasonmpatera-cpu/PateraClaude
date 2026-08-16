@@ -2,7 +2,7 @@
 
 A personal clinical tool that:
 
-1. Takes a **photo of a lab report** and/or **free-text / dictated notes** (in any order, any format), and uses Claude to extract structured patient data.
+1. Takes a **photo of a lab report** and/or **free-text / dictated notes** (in any order, any format) and parses them into structured patient data — **entirely in your browser, for free**. No server, no API key, no per-use cost.
 2. Calculates **10- and 30-year risk of total CVD, ASCVD, and heart failure** using the **AHA PREVENT equations** (Khan et al., *Circulation* 2024), the same model used by the [official AHA PREVENT calculator](https://professional.heart.org/en/guidelines-and-statements/prevent-calculator). Automatically upgrades to the HbA1c- and/or urine-ACR-enhanced equations when those labs are available, matching the official tool's behavior.
 3. Generates **guideline-based treatment recommendations** from the calculated risk and inputs: 2018 AHA/ACC lipid guideline, 2017/2025 AHA/ACC hypertension guideline, 2022 AHA/ACC/HFSA heart failure guideline, and the 2023 AHA Cardiovascular-Kidney-Metabolic (CKM) health staging.
 
@@ -10,49 +10,54 @@ Unless a field is explicitly stated otherwise (in the image or the dictated text
 
 ⚠️ **For clinical decision support only.** This is not a medical device and has not been validated for clinical use. Always verify extracted data and recommendations independently.
 
+## Why no AI / API key
+
+An earlier version of this tool called the Claude API to read the lab photo and parse dictated notes. That costs money per use and requires an Anthropic API key. Since this is built for personal, one-user use, extraction is now done **entirely with local pattern matching and in-browser OCR** — zero marginal cost, works offline after the first load, and nothing about the patient data ever leaves your machine. The tradeoff: it's less flexible than an LLM about messy handwriting, unusual report layouts, or phrasing it hasn't seen — which is exactly why the app always makes you review and confirm every field before calculating anything.
+
 ## How it's built
 
-- **Calculation engine** (`client/src/lib/prevent.js`, `preventCoefficients.js`) — pure, deterministic JavaScript. Coefficients were pulled directly from the peer-reviewed reference implementation [`bcjaeger/PooledCohort`](https://github.com/bcjaeger/PooledCohort) (`equation_version = "Khan_2023"`), which is validated against the official AHA calculator. The engine was checked against 22 of that package's own published test cases (all outcomes, both sexes, base/HbA1c/ACR/full model tiers, 10- and 30-year horizons, including edge cases) and matches to the published precision.
-- **Guideline recommendations** (`client/src/lib/guidelines.js`) — deterministic rule engine, not LLM-generated, so the treatment logic is fixed and auditable.
-- **Data extraction** (`server/routes/extract.js`) — the only part that calls an LLM (Claude). It reads the image and/or prose text and returns structured JSON via forced tool-use; nothing about the risk math or recommendations depends on it. Always review the extracted values before calculating.
-- **Voice dictation** uses the browser's built-in Web Speech API (Chrome/Edge) — no server round-trip, no extra cost.
+- **Calculation engine** (`client/src/lib/prevent.js`, `preventCoefficients.js`) — pure, deterministic JavaScript. Coefficients were pulled directly from the peer-reviewed reference implementation [`bcjaeger/PooledCohort`](https://github.com/bcjaeger/PooledCohort) (`equation_version = "Khan_2023"`), which is validated against the official AHA calculator. The engine was checked against the package's own published test cases (all outcomes, both sexes, base/HbA1c/ACR/full model tiers, 10- and 30-year horizons, including edge cases) and matches to the published precision.
+- **Guideline recommendations** (`client/src/lib/guidelines.js`) — deterministic rule engine referencing the cited guidelines directly; not LLM-generated, so the treatment logic is fixed and auditable.
+- **Text parsing** (`client/src/lib/textParser.js`) — a local, regex/keyword-based parser tuned for common lab abbreviations, units (including mmol/L and µmol/L conversion), and dictation phrasing (including negation, e.g. "no diabetes," "former smoker"). Runs synchronously, no network calls.
+- **Photo OCR** (`client/src/lib/ocr.js`) — [Tesseract.js](https://github.com/naptha/tesseract.js), a WebAssembly OCR engine that runs fully in the browser. The recognized text is fed through the same parser used for dictated notes. The first OCR run in a browser session downloads the English language model (a few MB, from Tesseract.js's default CDN) and the browser caches it after that.
+- **Voice dictation** (`client/src/components/ProseInput.jsx`) uses the browser's built-in Web Speech API (Chrome/Edge) — also free, also no server round-trip.
+
+## What the parser can and can't do
+
+It looks for labeled values (`"TC 210"`, `"total cholesterol 210"`, `"HDL: 45 mg/dL"`, `"A1c 7.2%"`, `"BP 148/92"`, `"5'10\", 210 lbs"`, etc.), common drug names (statins, antihypertensives, diabetes medications) to infer therapy status, and negation phrasing ("no diabetes," "denies smoking," "former smoker," "not on any statin"). It handles input in any order and mixed shorthand/prose.
+
+It will **not** reliably handle: handwritten notes photographed poorly, lab report layouts where the value is in a table column far from its label, or phrasing/abbreviations it hasn't been taught. When a field isn't found, it's simply left blank in the form for you to fill in — nothing is guessed.
 
 ## Setup
 
-Requires Node 18+ and an [Anthropic API key](https://console.anthropic.com/).
+Requires Node 18+.
 
 ```bash
 npm run install:all
-
-cp server/.env.example server/.env
-# edit server/.env and paste your ANTHROPIC_API_KEY
-
 npm run dev
 ```
 
-This starts the API server on `http://localhost:8787` and the web app on `http://localhost:5173` (open this one in your browser). The dev server proxies `/api/*` requests to the backend.
+Open `http://localhost:5173`. That's it — no environment variables, no accounts.
 
 ## Production build
 
 ```bash
-npm run build     # builds client/dist
-npm start         # serves the API only — see note below
+npm run build     # builds client/dist — a static site, deployable anywhere
+npm run preview   # serve the production build locally to sanity-check it
 ```
 
-`npm start` runs the Express API server. To serve the built frontend from the same server, either deploy `client/dist` to a static host (Vercel, Netlify, GitHub Pages, etc.) pointed at your API's URL, or add `express.static` for `client/dist` in `server/index.js` if you want a single deployable process.
+Since everything runs client-side, `client/dist` can be hosted on any static host (GitHub Pages, Netlify, Vercel, or just opened locally) with no backend at all.
 
 ## Project structure
 
 ```
-server/
-  index.js               Express app
-  routes/extract.js       POST /api/extract — Claude vision + tool-use extraction
-  lib/extractionSchema.js Structured-output schema/prompt for extraction
 client/
   src/lib/prevent.js              PREVENT risk calculation engine
   src/lib/preventCoefficients.js  AHA PREVENT model coefficients (base/HbA1c/ACR/full, 10y/30y)
   src/lib/guidelines.js           Guideline-based recommendation rules
-  src/lib/formMapping.js          Form <-> extraction-result <-> calculator-input mapping
+  src/lib/textParser.js           Local regex/keyword parser for dictated notes and OCR text
+  src/lib/ocr.js                  In-browser OCR (Tesseract.js) for lab-report photos
+  src/lib/formMapping.js          Form <-> parsed-data <-> calculator-input mapping
   src/components/                 UI components (image upload, dictation, form, results)
 ```
 

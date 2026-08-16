@@ -6,6 +6,8 @@ import ResultsPanel from "./components/ResultsPanel.jsx";
 import RecommendationsPanel from "./components/RecommendationsPanel.jsx";
 import { computePreventRisk } from "./lib/prevent.js";
 import { generateRecommendations } from "./lib/guidelines.js";
+import { parsePatientText } from "./lib/textParser.js";
+import { recognizeImageText } from "./lib/ocr.js";
 import {
   defaultFormData,
   applyExtraction,
@@ -31,21 +33,38 @@ export default function App() {
     setExtracting(true);
     setExtractError(null);
     setExtractNotes(null);
-    try {
-      const res = await fetch("/api/extract", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ imageDataUrl, proseText })
-      });
-      const body = await res.json();
-      if (!res.ok) throw new Error(body.error || "Extraction failed.");
-      setFormData((prev) => applyExtraction(prev, body.data));
-      if (body.data.notes) setExtractNotes(body.data.notes);
-    } catch (err) {
-      setExtractError(err.message);
-    } finally {
-      setExtracting(false);
+
+    let combinedText = proseText || "";
+    let ocrFailure = null;
+
+    if (imageDataUrl) {
+      setExtractNotes("Reading text from the photo (this can take a few seconds, longer the first time)...");
+      try {
+        const ocrText = await recognizeImageText(imageDataUrl);
+        combinedText = `${ocrText}\n${combinedText}`;
+      } catch (err) {
+        ocrFailure = err.message || "Could not read the photo.";
+      }
     }
+
+    try {
+      const extracted = parsePatientText(combinedText);
+      setFormData((prev) => applyExtraction(prev, extracted));
+    } catch (err) {
+      setExtractError(err.message || "Extraction failed.");
+      setExtracting(false);
+      return;
+    }
+
+    if (ocrFailure) {
+      setExtractError(ocrFailure);
+      setExtractNotes(proseText.trim() ? "Parsed the typed/dictated text only; the photo could not be read." : null);
+    } else {
+      setExtractNotes(
+        "Parsed locally in your browser — no data was sent anywhere. Please review every field below before calculating."
+      );
+    }
+    setExtracting(false);
   }
 
   function handleCalculate() {
@@ -102,7 +121,7 @@ export default function App() {
             </span>
           </div>
           {extractError && <div className="alert alert-error" style={{ marginTop: "0.75rem" }}>{extractError}</div>}
-          {extractNotes && <div className="alert" style={{ marginTop: "0.75rem" }}>Note from extraction: {extractNotes}</div>}
+          {extractNotes && <div className="alert" style={{ marginTop: "0.75rem" }}>{extractNotes}</div>}
         </section>
 
         <section className="card">
@@ -124,7 +143,8 @@ export default function App() {
       <footer className="disclaimer">
         For clinical decision support only — not a substitute for clinical judgment. Verify all extracted data and
         guideline recommendations independently. PREVENT equations are validated for ages 30-79 without prior
-        cardiovascular disease. AI-assisted extraction can make mistakes; review every field before calculating.
+        cardiovascular disease. All extraction runs locally in your browser (no server, no account, no cost) and can
+        misread values; review every field before calculating.
       </footer>
     </div>
   );
