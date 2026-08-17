@@ -4,9 +4,11 @@
 // guidelines rather than free-form model output.
 //
 // References:
-// - 2018 AHA/ACC/Multi-Society Guideline on the Management of Blood
-//   Cholesterol (Circulation. 2019;139:e1082-e1143), as updated by the 2023
-//   AHA PREVENT Scientific Statement's discussion of risk-based thresholds.
+// - 2026 ACC/AHA/AACVPR/ABC/ACPM/ADA/AGS/APhA/ASPC/NLA/PCNA Guideline on the
+//   Management of Dyslipidemia (Circulation. 2026; DOI 10.1161/CIR.0000000000001423),
+//   which replaces and supersedes the 2018 AHA/ACC/Multi-Society Blood
+//   Cholesterol Guideline. Lipid recommendations in this tool are based on
+//   the 2026 guideline only.
 // - 2017 ACC/AHA/... Guideline for the Prevention, Detection, Evaluation,
 //   and Management of High Blood Pressure in Adults (Hypertension.
 //   2018;71:e13-e115), with reference to the 2025 AHA/ACC blood-pressure
@@ -18,10 +20,9 @@
 //   2023;148:1606-1635 and 148:1982-2004).
 //
 // This tool is decision SUPPORT only — it does not replace clinical
-// judgment, and guideline thresholds (especially numeric ASCVD risk
-// cutpoints originally pegged to the Pooled Cohort Equations) are still
-// being formally recalibrated by AHA/ACC for use with PREVENT. Always
-// verify against current primary sources.
+// judgment. Always verify against current primary sources.
+
+import { riskCategory10yrASCVD } from "./prevent.js";
 
 function pct(fraction) {
   return fraction == null ? null : Math.round(fraction * 1000) / 10;
@@ -36,70 +37,108 @@ export function bpCategory(sbp, dbp) {
   return "Normal blood pressure";
 }
 
-function lipidRecommendation(inputs, ascvd10Pct) {
-  const { age, diabetes, knownCvd, ldl } = inputs;
+function lipidRecommendation(inputs, ascvd10Pct, ascvd30Pct) {
+  const { age, diabetes, knownCvd, ldl, smoker, sbp, dbp, statin } = inputs;
   const bullets = [];
   let riskGroup = null;
+  const category = bpCategory(sbp, dbp);
+  const hypertensive = category === "Stage 1 hypertension" || category === "Stage 2 hypertension";
 
   if (knownCvd) {
-    riskGroup = "Secondary prevention (established ASCVD)";
+    // The guideline's full "very high risk" definition also weighs event
+    // recency/count, heart failure history, and revascularization history,
+    // none of which this tool collects — so this is an approximation from
+    // the proxies available (age >65, diabetes, current smoking,
+    // hypertension, LDL-C >100 mg/dL despite statin), not a substitute for
+    // chart review against the exact criteria.
+    const highRiskConditionCount = [
+      age != null && age > 65,
+      diabetes,
+      smoker,
+      hypertensive,
+      statin && ldl != null && ldl > 100
+    ].filter(Boolean).length;
+    const veryHighRisk = highRiskConditionCount >= 2;
+
+    riskGroup = veryHighRisk ? "Secondary prevention — very high risk" : "Secondary prevention — ASCVD, not very high risk";
     bullets.push(
       "High-intensity statin recommended for all patients with established ASCVD, regardless of baseline LDL-C (Class I)."
     );
-    bullets.push(
-      "LDL-C goal <70 mg/dL (consider <55 mg/dL if very high-risk features, e.g. multiple major ASCVD events or one major event plus multiple high-risk conditions)."
-    );
-    bullets.push(
-      "If LDL-C remains ≥70 mg/dL on maximally tolerated statin, add ezetimibe; if still not at goal (especially very-high-risk), add a PCSK9 inhibitor."
-    );
-  } else if (ldl != null && ldl >= 190) {
-    riskGroup = "Severe hypercholesterolemia (LDL-C ≥190 mg/dL)";
-    bullets.push(
-      "High-intensity statin recommended regardless of calculated 10-year risk (Class I)."
-    );
-    bullets.push(
-      "Consider evaluation for familial hypercholesterolemia if LDL-C persistently ≥190 mg/dL, especially with family history of premature ASCVD or very high LDL-C."
-    );
-    bullets.push("Add ezetimibe ± PCSK9 inhibitor if LDL-C reduction <50% or LDL-C remains ≥100 mg/dL on statin.");
-  } else if (diabetes && age >= 40 && age <= 75) {
-    riskGroup = "Diabetes, age 40-75 (primary prevention)";
-    bullets.push("Moderate-intensity statin recommended at minimum (Class I).");
-    bullets.push(
-      "Consider high-intensity statin (or adding ezetimibe) if multiple ASCVD risk factors are present or 10-year ASCVD risk is ≥20% (Class IIa)."
-    );
-  } else if (age != null && age >= 40 && age <= 75) {
-    if (ascvd10Pct == null) {
-      riskGroup = "Primary prevention — risk not yet calculated";
-    } else if (ascvd10Pct < 5) {
-      riskGroup = `Low risk (10-yr ASCVD ${ascvd10Pct}%)`;
-      bullets.push("Emphasize heart-healthy lifestyle; statin not routinely indicated.");
-    } else if (ascvd10Pct < 7.5) {
-      riskGroup = `Borderline risk (10-yr ASCVD ${ascvd10Pct}%)`;
+    if (veryHighRisk) {
       bullets.push(
-        "Statin not routinely indicated; use risk-enhancing factors (family history of premature ASCVD, persistently elevated LDL-C ≥160 mg/dL, metabolic syndrome, CKD, chronic inflammatory disease, elevated Lp(a) or hsCRP, ABI <0.9) to inform shared decision-making (Class IIb)."
+        `LDL-C goal <55 mg/dL and non-HDL-C goal <85 mg/dL (approximated as "very high risk" from ${highRiskConditionCount} proxy features in the data provided — confirm against the full criteria: multiple major ASCVD events, or one major event plus ≥2 of age >65, recent coronary revascularization, current smoking, diabetes, heart failure history, hypertension, or LDL-C >100 mg/dL despite maximally tolerated statin + ezetimibe).`
       );
-    } else if (ascvd10Pct < 20) {
-      riskGroup = `Intermediate risk (10-yr ASCVD ${ascvd10Pct}%)`;
-      bullets.push("Moderate-intensity statin is reasonable (Class IIa).");
-      bullets.push("Risk-enhancing factors or a coronary artery calcium (CAC) score can refine the decision if it remains uncertain.");
     } else {
-      riskGroup = `High risk (10-yr ASCVD ${ascvd10Pct}%)`;
-      bullets.push("Statin therapy recommended (Class I); target ≥50% LDL-C reduction, favoring high-intensity statin.");
+      bullets.push("LDL-C goal <70 mg/dL.");
+    }
+    bullets.push(
+      "If LDL-C/non-HDL-C remain above goal on maximally tolerated statin, add ezetimibe; if still above goal, add a PCSK9 inhibitor."
+    );
+  } else if (ldl != null && ldl >= 160) {
+    riskGroup = "LDL-C ≥160 mg/dL";
+    bullets.push(
+      "Statin therapy recommended regardless of calculated ASCVD risk, to limit cumulative lifetime exposure to atherogenic lipoproteins — the 2026 guideline lowered this unconditional-treatment threshold from the prior 190 mg/dL to 160 mg/dL."
+    );
+    bullets.push(
+      "Consider evaluation for familial hypercholesterolemia, especially with family history of premature ASCVD or LDL-C persistently ≥190 mg/dL."
+    );
+  } else if (diabetes && age != null && age >= 40 && age <= 75) {
+    riskGroup = "Diabetes, age 40-75 (primary prevention)";
+    bullets.push("LDL-lowering therapy (statin) recommended regardless of LDL-C level or calculated risk (Class I).");
+    bullets.push("Favor a high-intensity statin at the higher end of the risk range or with additional ASCVD risk factors present.");
+  } else if (diabetes && age != null && age >= 30 && age < 40) {
+    riskGroup = "Diabetes, age 30-39 (primary prevention)";
+    const qualifies = (ascvd10Pct != null && ascvd10Pct >= 3) || (ascvd30Pct != null && ascvd30Pct >= 10);
+    if (qualifies) {
+      bullets.push(
+        `Statin therapy should be considered: 10-year PREVENT-ASCVD risk ${ascvd10Pct ?? "—"}% and/or 30-year risk ${ascvd30Pct ?? "—"}% meets the guideline's threshold for younger adults with diabetes (10-yr ≥3% or 30-yr ≥10%).`
+      );
+    } else {
+      bullets.push(
+        `10-year PREVENT-ASCVD risk (${ascvd10Pct ?? "—"}%) and 30-year risk (${ascvd30Pct ?? "—"}%) are both below the threshold that triggers statin consideration in adults with diabetes under 40 (10-yr ≥3% or 30-yr ≥10%); reassess periodically.`
+      );
+    }
+  } else if (age != null && age >= 30 && age <= 79) {
+    const cat = ascvd10Pct == null ? null : riskCategory10yrASCVD(ascvd10Pct / 100);
+    if (cat == null) {
+      riskGroup = "Primary prevention — risk not yet calculated";
+    } else if (cat === "low") {
+      riskGroup = `Low risk (10-yr PREVENT-ASCVD ${ascvd10Pct}%)`;
+      bullets.push("Statin not indicated on risk grounds alone; emphasize heart-healthy lifestyle.");
+      if (ascvd30Pct != null) {
+        bullets.push(
+          `30-year PREVENT-ASCVD risk is ${ascvd30Pct}% — informative for a lifetime-risk discussion, but not itself a treatment trigger outside of diabetes or other qualifying conditions.`
+        );
+      }
+    } else if (cat === "borderline") {
+      riskGroup = `Borderline risk (10-yr PREVENT-ASCVD ${ascvd10Pct}%)`;
+      bullets.push(
+        "LDL-lowering therapy may be considered after a clinician-patient discussion, informed by risk-enhancing factors (family history of premature ASCVD, persistently elevated LDL-C, metabolic syndrome, CKD, chronic inflammatory disease [e.g. rheumatoid arthritis, lupus, psoriasis, HIV], reproductive risk markers [early menopause, preeclampsia, gestational diabetes, preterm delivery], elevated Lp(a)) and/or coronary artery calcium (CAC) scoring (Class IIa)."
+      );
+    } else if (cat === "intermediate") {
+      riskGroup = `Intermediate risk (10-yr PREVENT-ASCVD ${ascvd10Pct}%)`;
+      bullets.push("LDL-lowering therapy with at least a moderate-intensity statin should be considered after a clinician-patient discussion.");
+      bullets.push(
+        "Coronary artery calcium (CAC) scoring (now a Class I option for borderline/uncertain cases) can refine the decision; a CAC score of 0 can support deferring statin therapy if no other risk-enhancing conditions are present."
+      );
+    } else {
+      riskGroup = `High risk (10-yr PREVENT-ASCVD ${ascvd10Pct}%)`;
+      bullets.push("LDL-lowering therapy recommended; favor a high-intensity statin at the higher end of this risk range.");
     }
   } else {
-    riskGroup = "Outside the 40-75y primary-prevention risk-calculator range";
+    riskGroup = "Outside the 30-79y PREVENT-ASCVD range";
     bullets.push(
-      "PREVENT/pooled-cohort-style risk calculators are validated for ages 30-79; statin decisions below 40 or above 75 should rely more heavily on overall clinical assessment, risk-enhancing factors, and (when age-appropriate) CAC scoring."
+      "The PREVENT-ASCVD equations (and the risk categories above) are validated for ages 30-79; base decisions outside that range on overall clinical assessment, LDL-C level, and risk-enhancing factors."
     );
   }
 
   bullets.push(
-    "Caveat: the 5% / 7.5% / 20% ASCVD risk thresholds above originate from the Pooled Cohort Equations. PREVENT tends to estimate lower risk for the same patient, and AHA/ACC have not yet issued a final, formally recalibrated set of treatment thresholds specific to PREVENT — apply clinical judgment and expect these cutpoints to be refined."
+    "Lipoprotein(a) should be measured at least once in all adults to refine risk assessment: levels ≥125 nmol/L (≈50 mg/dL) function as a risk-enhancing factor, and ≥250 nmol/L (≈100 mg/dL) confer roughly double the estimated risk."
   );
 
   return {
     title: "Lipid management",
-    guideline: "2018 AHA/ACC/Multi-Society Cholesterol Guideline (as informed by the 2023 AHA PREVENT statement)",
+    guideline: "2026 ACC/AHA/Multi-Society Guideline on the Management of Dyslipidemia",
     riskGroup,
     bullets
   };
@@ -260,10 +299,11 @@ function ckmRecommendation(inputs) {
  */
 export function generateRecommendations(inputs, riskResults) {
   const ascvd10Pct = pct(riskResults?.ascvd?.[10]);
+  const ascvd30Pct = pct(riskResults?.ascvd?.[30]);
   const hf10Pct = pct(riskResults?.hf?.[10]);
 
   return {
-    lipid: lipidRecommendation(inputs, ascvd10Pct),
+    lipid: lipidRecommendation(inputs, ascvd10Pct, ascvd30Pct),
     bp: bpRecommendation(inputs, ascvd10Pct),
     heartFailure: heartFailureRecommendation(inputs, hf10Pct),
     ckm: ckmRecommendation({ ...inputs, ascvd10Pct })

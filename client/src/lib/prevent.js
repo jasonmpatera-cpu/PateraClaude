@@ -197,10 +197,13 @@ export function computePreventRisk(inputs) {
   return { tier, risks: results };
 }
 
+// Risk categories per the 2026 ACC/AHA/Multi-Society Dyslipidemia
+// Guideline, defined natively on 10-year PREVENT-ASCVD risk (this replaced
+// the older Pooled-Cohort-Equation-pegged 5%/7.5%/20% cutpoints).
 export function riskCategory10yrASCVD(riskFraction) {
   const pct = riskFraction * 100;
-  if (pct < 5) return "low";
-  if (pct < 7.5) return "borderline";
-  if (pct < 20) return "intermediate";
+  if (pct < 3) return "low";
+  if (pct < 5) return "borderline";
+  if (pct < 10) return "intermediate";
   return "high";
 }

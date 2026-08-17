@@ -4,7 +4,7 @@ A personal clinical tool that:
 
 1. Takes a **photo of a lab report** and/or **free-text / dictated notes** (in any order, any format) and parses them into structured patient data — **entirely in your browser, for free**. No server, no API key, no per-use cost.
 2. Calculates **10- and 30-year risk of total CVD, ASCVD, and heart failure** using the **AHA PREVENT equations** (Khan et al., *Circulation* 2024), the same model used by the [official AHA PREVENT calculator](https://professional.heart.org/en/guidelines-and-statements/prevent-calculator). Automatically upgrades to the HbA1c- and/or urine-ACR-enhanced equations when those labs are available, matching the official tool's behavior.
-3. Generates **guideline-based treatment recommendations** from the calculated risk and inputs: 2018 AHA/ACC lipid guideline, 2017/2025 AHA/ACC hypertension guideline, 2022 AHA/ACC/HFSA heart failure guideline, and the 2023 AHA Cardiovascular-Kidney-Metabolic (CKM) health staging.
+3. Generates **guideline-based treatment recommendations** from the calculated risk and inputs: the 2026 ACC/AHA/Multi-Society dyslipidemia guideline (lipid section only — the 2018 cholesterol guideline it replaced is not used), the 2017/2025 AHA/ACC hypertension guideline, the 2022 AHA/ACC/HFSA heart failure guideline, and the 2023 AHA Cardiovascular-Kidney-Metabolic (CKM) health staging.
 
 Unless a field is explicitly stated otherwise (in the image or the dictated text), the tool assumes **no diabetes, no antihypertensive medication, and no statin** — per the default assumption requested for this tool.
 
@@ -63,9 +63,9 @@ client/
 
 ## Guideline sources
 
-- 2018 AHA/ACC/Multi-Society Guideline on the Management of Blood Cholesterol (*Circulation*. 2019;139:e1082-e1143)
+- 2026 ACC/AHA/AACVPR/ABC/ACPM/ADA/AGS/APhA/ASPC/NLA/PCNA Guideline on the Management of Dyslipidemia (*Circulation*. 2026; DOI 10.1161/CIR.0000000000001423) — replaces the 2018 AHA/ACC/Multi-Society Blood Cholesterol Guideline, which this tool no longer references
 - 2017 ACC/AHA/... Guideline for Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults (*Hypertension*. 2018;71:e13-e115), referencing the 2025 AHA/ACC blood-pressure risk-assessment scientific statement
 - 2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure (*Circulation*. 2022;145:e895-e1032)
 - 2023 AHA Scientific Statement / Presidential Advisory on Cardiovascular-Kidney-Metabolic (CKM) Health (*Circulation*. 2023;148:1606-1635 and 148:1982-2004)
 
-Numeric ASCVD risk thresholds (5% / 7.5% / 20%) used for statin and BP treatment decisions originate from the older Pooled Cohort Equations. PREVENT tends to produce lower absolute risk estimates for the same patient, and AHA/ACC have not yet published a final, formally recalibrated set of PREVENT-specific treatment thresholds — the app surfaces this caveat directly in its recommendations.
+The lipid risk categories (10-year PREVENT-ASCVD <3% / 3-<5% / 5-<10% / ≥10%) and treatment thresholds come directly from the 2026 dyslipidemia guideline, which was written natively around PREVENT rather than the older Pooled Cohort Equations. The blood-pressure section's ASCVD-risk-based treatment trigger, by contrast, still traces to the 2017 hypertension guideline's original (Pooled-Cohort-pegged) threshold pending a fully PREVENT-native update — the app notes this where relevant.
