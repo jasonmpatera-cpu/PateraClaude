@@ -45,6 +45,25 @@ body {
   letter-spacing: 0.02em;
 }
 
+.header-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.btn-new-patient {
+  background: rgba(255, 255, 255, 0.15);
+  color: var(--white);
+  border-color: rgba(255, 255, 255, 0.6);
+  white-space: nowrap;
+}
+
+.btn-new-patient:hover {
+  background: rgba(255, 255, 255, 0.25);
+}
+
 .app-header p {
   margin: 0.25rem 0 0;
   color: var(--red-100);
@@ -269,10 +288,44 @@ body {
 
 .rec-section {
   margin-bottom: 1.1rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.9rem;
 }
 
 .rec-section:last-child {
   margin-bottom: 0;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.rec-section > summary {
+  cursor: pointer;
+  list-style: none;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  padding: 0.15rem 0;
+}
+
+.rec-section > summary::-webkit-details-marker {
+  display: none;
+}
+
+.rec-section > summary::before {
+  content: "▸";
+  color: var(--red-500);
+  font-size: 0.8rem;
+  transition: transform 0.15s ease;
+  flex-shrink: 0;
+}
+
+.rec-section[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.rec-section > summary > h3 {
+  margin: 0;
 }
 
 .rec-guideline {
@@ -347,4 +400,33 @@ body {
 .small-muted {
   font-size: 0.78rem;
   color: var(--ink-soft);
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+
+  body,
+  .app-shell,
+  .app-main {
+    background: var(--white);
+  }
+
+  .card {
+    box-shadow: none;
+    border: 1px solid var(--border);
+    break-inside: avoid;
+  }
+
+  /* <details> hides its content when not [open] via the browser's own
+     UA stylesheet, not ours — override it so a section a user collapsed
+     on screen still prints expanded. */
+  .rec-section > summary ~ * {
+    display: block !important;
+  }
+
+  .rec-section > summary::before {
+    display: none;
+  }
 }

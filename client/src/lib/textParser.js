@@ -208,16 +208,52 @@ export function parsePatientText(rawText) {
         negationGap: 50
       })
     ),
-    known_cvd: detectFlag(text, {
+    // negationGap widened for these: "no history of heart attack or stroke"
+    // style phrasing puts real distance between the negation trigger and a
+    // second/third item in an "X, Y, or Z" list (commas still act as a hard
+    // stop inside detectFlag, so this doesn't reintroduce the cross-clause
+    // bridging bug fixed earlier for family_history/on_bp_meds).
+    prior_mi: detectFlag(text, {
+      positive: ["heart attack", "myocardial infarction", "\\bmi\\b", "\\bstemi\\b", "\\bnstemi\\b"],
+      negative: ["heart attack", "myocardial infarction", "mi\\b", "stemi", "nstemi"],
+      negationGap: 35
+    }),
+    prior_stroke: detectFlag(text, {
+      positive: ["\\bstroke\\b", "\\btia\\b", "cerebrovascular accident", "\\bcva\\b"],
+      negative: ["stroke", "tia", "cerebrovascular accident", "cva"],
+      negationGap: 35
+    }),
+    prior_pad: detectFlag(text, {
+      positive: ["peripheral artery disease", "peripheral vascular disease", "\\bpad\\b", "\\bpvd\\b"],
+      negative: ["peripheral artery disease", "peripheral vascular disease", "pad\\b", "pvd\\b"],
+      negationGap: 35
+    }),
+    acs_within_12mo: detectFlag(text, {
       positive: [
-        "heart attack", "myocardial infarction", "\\bmi\\b", "\\bstroke\\b", "\\btia\\b",
-        "peripheral artery disease", "\\bpad\\b", "\\bstent\\b", "angioplasty",
-        "\\bcabg\\b", "bypass surgery", "coronary artery disease", "\\bcad\\b", "revascularization"
+        "acute coronary syndrome", "\\bacs\\b",
+        "(?:heart attack|myocardial infarction|\\bmi\\b)[^.;\\n]{0,25}(?:this (?:year|month)|recently|last month|within (?:the )?(?:past |last )?(?:\\d+ )?(?:month|year))",
+        "recent (?:heart attack|myocardial infarction|\\bmi\\b)"
       ],
-      negative: [
-        "heart attack", "myocardial infarction", "mi\\b", "stroke", "tia", "cvd",
-        "cardiovascular disease", "cad", "known cvd"
-      ]
+      negative: ["acute coronary syndrome", "acs\\b", "recent heart attack", "recent mi"],
+      negationGap: 35
+    }),
+    prior_revascularization: detectFlag(text, {
+      positive: [
+        "\\bstent\\b", "angioplasty", "\\bpci\\b", "\\bcabg\\b", "bypass surgery",
+        "coronary[^.;\\n]{0,15}revasculariz\\w*", "carotid[^.;\\n]{0,15}revasculariz\\w*", "revasculariz\\w*"
+      ],
+      negative: ["stent", "angioplasty", "pci\\b", "cabg", "bypass surgery", "revasculariz\\w*"],
+      negationGap: 35
+    }),
+    heart_failure_history: detectFlag(text, {
+      positive: ["heart failure", "\\bchf\\b", "\\bhfref\\b", "\\bhfpef\\b", "cardiomyopathy"],
+      negative: ["heart failure", "chf\\b", "hfref", "hfpef", "cardiomyopathy"],
+      negationGap: 35
+    }),
+    atrial_fibrillation: detectFlag(text, {
+      positive: ["atrial fibrillation", "\\bafib\\b", "\\ba-?fib\\b"],
+      negative: ["atrial fibrillation", "afib", "a-?fib"],
+      negationGap: 35
     }),
     family_history_premature_ascvd: detectFlag(text, {
       positive: ["family history[^.;\\n]{0,40}(?:heart|cardiac|premature|\\bcad\\b|\\bmi\\b)"],

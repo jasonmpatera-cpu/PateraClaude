@@ -88,8 +88,19 @@ export default function PatientForm({ formData, setFormData }) {
         <ToggleField formData={formData} setField={setField} name="diabetes" label="Diabetes" />
         <ToggleField formData={formData} setField={setField} name="bpMeds" label="On antihypertensive medication" />
         <ToggleField formData={formData} setField={setField} name="statin" label="On statin therapy" />
-        <ToggleField formData={formData} setField={setField} name="knownCvd" label="Known ASCVD (prior MI/stroke/PAD/revasc.)" />
         <ToggleField formData={formData} setField={setField} name="familyHistory" label="Family history of premature ASCVD" />
+      </div>
+
+      <h3>Cardiovascular / cerebrovascular history</h3>
+      <p className="small-muted">Drives secondary-prevention lipid goals, CKD/heart-failure context, and (if AFib is checked) the CHA₂DS₂-VASc score below.</p>
+      <div className="field-row">
+        <ToggleField formData={formData} setField={setField} name="priorMI" label="Prior MI" />
+        <ToggleField formData={formData} setField={setField} name="priorStroke" label="Prior stroke / TIA" />
+        <ToggleField formData={formData} setField={setField} name="priorPAD" label="Prior PAD" />
+        <ToggleField formData={formData} setField={setField} name="acsWithin12mo" label="ACS within past 12 months" />
+        <ToggleField formData={formData} setField={setField} name="priorRevasc" label="Prior coronary/carotid revascularization" />
+        <ToggleField formData={formData} setField={setField} name="heartFailureHistory" label="Heart failure history" />
+        <ToggleField formData={formData} setField={setField} name="atrialFibrillation" label="Atrial fibrillation" />
       </div>
     </div>
   );

@@ -4,7 +4,8 @@ A personal clinical tool that:
 
 1. Takes a **photo of a lab report** and/or **free-text / dictated notes** (in any order, any format) and parses them into structured patient data — **entirely in your browser, for free**. No server, no API key, no per-use cost.
 2. Calculates **10- and 30-year risk of total CVD, ASCVD, and heart failure** using the **AHA PREVENT equations** (Khan et al., *Circulation* 2024), the same model used by the [official AHA PREVENT calculator](https://professional.heart.org/en/guidelines-and-statements/prevent-calculator). Automatically upgrades to the HbA1c- and/or urine-ACR-enhanced equations when those labs are available, matching the official tool's behavior.
-3. Generates **guideline-based treatment recommendations** from the calculated risk and inputs: the 2026 ACC/AHA/Multi-Society dyslipidemia guideline (lipid section only — the 2018 cholesterol guideline it replaced is not used), the 2017/2025 AHA/ACC hypertension guideline, the 2022 AHA/ACC/HFSA heart failure guideline, and the 2023 AHA Cardiovascular-Kidney-Metabolic (CKM) health staging.
+3. Generates **guideline-based treatment recommendations** across eight domains: lipids (2026 dyslipidemia guideline), blood pressure (2017/2025), aspirin for ASCVD prevention (2022 USPSTF), diabetes management (2026 ADA Standards of Care), CKD staging (KDIGO 2024), heart failure (2022 AHA/ACC/HFSA), CHA₂DS₂-VASc stroke-risk scoring (shown only if atrial fibrillation is checked), and CKM health staging (2023 AHA).
+4. Built for quick use in a clinic visit: a **New patient / Clear** button resets everything between patients (nothing persists across patients — see *Privacy* below), and a **Copy summary for chart note** / **Print summary** pair turns the results into something you can paste into a note or hand to a patient.
 
 Unless a field is explicitly stated otherwise (in the image or the dictated text), the tool assumes **no diabetes, no antihypertensive medication, and no statin** — per the default assumption requested for this tool.
 
@@ -54,10 +55,11 @@ Since everything runs client-side, `client/dist` can be hosted on any static hos
 client/
   src/lib/prevent.js              PREVENT risk calculation engine
   src/lib/preventCoefficients.js  AHA PREVENT model coefficients (base/HbA1c/ACR/full, 10y/30y)
-  src/lib/guidelines.js           Guideline-based recommendation rules
+  src/lib/guidelines.js           Guideline-based recommendation rules (all 8 sections)
   src/lib/textParser.js           Local regex/keyword parser for dictated notes and OCR text
   src/lib/ocr.js                  In-browser OCR (Tesseract.js) for lab-report photos
   src/lib/formMapping.js          Form <-> parsed-data <-> calculator-input mapping
+  src/lib/summary.js              Plain-text chart-note summary generator (copy/print)
   src/components/                 UI components (image upload, dictation, form, results)
 ```
 
@@ -65,7 +67,17 @@ client/
 
 - 2026 ACC/AHA/AACVPR/ABC/ACPM/ADA/AGS/APhA/ASPC/NLA/PCNA Guideline on the Management of Dyslipidemia (*Circulation*. 2026; DOI 10.1161/CIR.0000000000001423) — replaces the 2018 AHA/ACC/Multi-Society Blood Cholesterol Guideline, which this tool no longer references
 - 2017 ACC/AHA/... Guideline for Prevention, Detection, Evaluation, and Management of High Blood Pressure in Adults (*Hypertension*. 2018;71:e13-e115), referencing the 2025 AHA/ACC blood-pressure risk-assessment scientific statement
+- 2022 USPSTF Recommendation Statement: Aspirin Use to Prevent Cardiovascular Disease
+- 2026 ADA Standards of Care in Diabetes
+- KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of Chronic Kidney Disease
 - 2022 AHA/ACC/HFSA Guideline for the Management of Heart Failure (*Circulation*. 2022;145:e895-e1032)
+- 2019 AHA/ACC/HRS Guideline for the Management of Patients With Atrial Fibrillation (CHA₂DS₂-VASc scoring/thresholds)
 - 2023 AHA Scientific Statement / Presidential Advisory on Cardiovascular-Kidney-Metabolic (CKM) Health (*Circulation*. 2023;148:1606-1635 and 148:1982-2004)
 
 The lipid risk categories (10-year PREVENT-ASCVD <3% / 3-<5% / 5-<10% / ≥10%) and treatment thresholds come directly from the 2026 dyslipidemia guideline, which was written natively around PREVENT rather than the older Pooled Cohort Equations. The blood-pressure section's ASCVD-risk-based treatment trigger, by contrast, still traces to the 2017 hypertension guideline's original (Pooled-Cohort-pegged) threshold pending a fully PREVENT-native update — the app notes this where relevant.
+
+The "very high risk" secondary-prevention lipid tier uses the guideline's actual criteria (≥2 major ASCVD events, or 1 major event plus ≥2 high-risk conditions) computed directly from the history checkboxes in the form — nothing is inferred or guessed.
+
+## Privacy between patients
+
+This is a browser-only app with no backend and no `localStorage`/`sessionStorage` persistence of patient data — nothing survives a page reload on its own. On a **shared clinic device**, always click **New patient / Clear** before walking away or moving to the next patient; it resets every field and result. Deliberately, the app does *not* remember the last patient's data across visits — for a multi-patient workflow, silently carrying over the previous patient's inputs would be a real safety hazard, not a convenience.

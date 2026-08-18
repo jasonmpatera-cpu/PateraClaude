@@ -7,8 +7,17 @@ export const defaultFormData = {
   diabetes: false,
   bpMeds: false,
   statin: false,
-  knownCvd: false,
   familyHistory: false,
+  // Granular ASCVD history — replaces a single "known ASCVD" checkbox so the
+  // 2026 lipid guideline's "very high risk" secondary-prevention criteria
+  // can be applied directly instead of approximated.
+  priorMI: false,
+  priorStroke: false,
+  priorPAD: false,
+  acsWithin12mo: false,
+  priorRevasc: false,
+  heartFailureHistory: false,
+  atrialFibrillation: false,
   totalChol: "",
   hdl: "",
   ldl: "",
@@ -25,9 +34,17 @@ export const defaultFormData = {
   waist: ""
 };
 
-// Maps server extraction field names -> [formKey, kind]. kind "num" fields
-// are only applied when non-null; kind "bool" fields always overwrite,
-// because the extraction prompt already defaults them to false.
+// True if any granular history item indicates established ASCVD — drives
+// secondary-prevention branches throughout the recommendation engine.
+export function hasKnownCvd(formData) {
+  return Boolean(
+    formData.priorMI || formData.priorStroke || formData.priorPAD || formData.acsWithin12mo || formData.priorRevasc
+  );
+}
+
+// Maps parsed-text field names -> [formKey, kind]. kind "num" fields are
+// only applied when non-null; kind "bool" fields always overwrite, because
+// the parser already defaults them to false rather than leaving them null.
 const FIELD_MAP = {
   age_years: ["age", "num"],
   sex: ["sex", "raw"],
@@ -35,8 +52,14 @@ const FIELD_MAP = {
   diabetes: ["diabetes", "bool"],
   on_bp_meds: ["bpMeds", "bool"],
   on_statin: ["statin", "bool"],
-  known_cvd: ["knownCvd", "boolOrNull"],
   family_history_premature_ascvd: ["familyHistory", "boolOrNull"],
+  prior_mi: ["priorMI", "boolOrNull"],
+  prior_stroke: ["priorStroke", "boolOrNull"],
+  prior_pad: ["priorPAD", "boolOrNull"],
+  acs_within_12mo: ["acsWithin12mo", "boolOrNull"],
+  prior_revascularization: ["priorRevasc", "boolOrNull"],
+  heart_failure_history: ["heartFailureHistory", "boolOrNull"],
+  atrial_fibrillation: ["atrialFibrillation", "boolOrNull"],
   systolic_bp_mmhg: ["sbp", "num"],
   diastolic_bp_mmhg: ["dbp", "num"],
   total_cholesterol_mgdl: ["totalChol", "num"],
@@ -55,7 +78,8 @@ const FIELD_MAP = {
 
 // Fills in BMI / eGFR from their raw ingredients (height+weight,
 // creatinine+age+sex) whenever the derived field itself is blank. Used both
-// after AI extraction and right before calculating from manually-typed data.
+// after text/photo parsing and right before calculating from manually-typed
+// data.
 export function deriveFormData(formData) {
   const next = { ...formData };
   if (!next.bmi && next.heightCm && next.weightKg) {
@@ -71,8 +95,8 @@ export function deriveFormData(formData) {
 
 export function applyExtraction(formData, extracted) {
   let next = { ...formData };
-  for (const [serverKey, [formKey, kind]] of Object.entries(FIELD_MAP)) {
-    const value = extracted[serverKey];
+  for (const [parsedKey, [formKey, kind]] of Object.entries(FIELD_MAP)) {
+    const value = extracted[parsedKey];
     if (kind === "num") {
       if (value != null && value !== "") next[formKey] = String(value);
     } else if (kind === "bool") {
@@ -109,8 +133,15 @@ export function formToCalcInputs(formData) {
     diabetes: Boolean(formData.diabetes),
     bpMeds: Boolean(formData.bpMeds),
     statin: Boolean(formData.statin),
-    knownCvd: Boolean(formData.knownCvd),
     familyHistory: Boolean(formData.familyHistory),
+    knownCvd: hasKnownCvd(formData),
+    priorMI: Boolean(formData.priorMI),
+    priorStroke: Boolean(formData.priorStroke),
+    priorPAD: Boolean(formData.priorPAD),
+    acsWithin12mo: Boolean(formData.acsWithin12mo),
+    priorRevasc: Boolean(formData.priorRevasc),
+    heartFailureHistory: Boolean(formData.heartFailureHistory),
+    atrialFibrillation: Boolean(formData.atrialFibrillation),
     totalChol: Number(formData.totalChol),
     hdl: Number(formData.hdl),
     ldl: formData.ldl !== "" ? Number(formData.ldl) : null,
@@ -121,6 +152,7 @@ export function formToCalcInputs(formData) {
     egfr: Number(formData.egfr),
     hba1c: formData.hba1c !== "" ? Number(formData.hba1c) : null,
     uacr: formData.uacr !== "" ? Number(formData.uacr) : null,
-    waist: formData.waist !== "" ? Number(formData.waist) : null
+    waist: formData.waist !== "" ? Number(formData.waist) : null,
+    creatinine: formData.creatinine !== "" ? Number(formData.creatinine) : null
   };
 }

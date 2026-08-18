@@ -38,38 +38,43 @@ export function bpCategory(sbp, dbp) {
 }
 
 function lipidRecommendation(inputs, ascvd10Pct, ascvd30Pct) {
-  const { age, diabetes, knownCvd, ldl, smoker, sbp, dbp, statin } = inputs;
+  const {
+    age, diabetes, knownCvd, ldl, smoker, sbp, dbp, statin,
+    priorMI, priorStroke, priorPAD, acsWithin12mo, priorRevasc, heartFailureHistory
+  } = inputs;
   const bullets = [];
   let riskGroup = null;
   const category = bpCategory(sbp, dbp);
   const hypertensive = category === "Stage 1 hypertension" || category === "Stage 2 hypertension";
 
   if (knownCvd) {
-    // The guideline's full "very high risk" definition also weighs event
-    // recency/count, heart failure history, and revascularization history,
-    // none of which this tool collects — so this is an approximation from
-    // the proxies available (age >65, diabetes, current smoking,
-    // hypertension, LDL-C >100 mg/dL despite statin), not a substitute for
-    // chart review against the exact criteria.
+    // 2026 guideline's exact "very high risk" definition: >=2 major ASCVD
+    // events, OR 1 major event plus >=2 high-risk conditions.
+    const majorEventCount = [acsWithin12mo, priorMI, priorStroke, priorPAD].filter(Boolean).length;
     const highRiskConditionCount = [
       age != null && age > 65,
-      diabetes,
+      priorRevasc,
       smoker,
+      diabetes,
+      heartFailureHistory,
       hypertensive,
       statin && ldl != null && ldl > 100
     ].filter(Boolean).length;
-    const veryHighRisk = highRiskConditionCount >= 2;
+    const veryHighRisk = majorEventCount >= 2 || (majorEventCount >= 1 && highRiskConditionCount >= 2);
 
     riskGroup = veryHighRisk ? "Secondary prevention — very high risk" : "Secondary prevention — ASCVD, not very high risk";
     bullets.push(
       "High-intensity statin recommended for all patients with established ASCVD, regardless of baseline LDL-C (Class I)."
     );
     if (veryHighRisk) {
-      bullets.push(
-        `LDL-C goal <55 mg/dL and non-HDL-C goal <85 mg/dL (approximated as "very high risk" from ${highRiskConditionCount} proxy features in the data provided — confirm against the full criteria: multiple major ASCVD events, or one major event plus ≥2 of age >65, recent coronary revascularization, current smoking, diabetes, heart failure history, hypertension, or LDL-C >100 mg/dL despite maximally tolerated statin + ezetimibe).`
-      );
+      bullets.push("LDL-C goal <55 mg/dL and non-HDL-C goal <85 mg/dL (very-high-risk criteria met).");
     } else {
       bullets.push("LDL-C goal <70 mg/dL.");
+      if (majorEventCount >= 1) {
+        bullets.push(
+          `Not currently classified very-high-risk (${highRiskConditionCount} of the ≥2 additional high-risk conditions needed are checked: age >65, prior revascularization, current smoking, diabetes, heart failure history, hypertension, LDL-C >100 mg/dL despite statin) — revisit if more become present.`
+        );
+      }
     }
     bullets.push(
       "If LDL-C/non-HDL-C remain above goal on maximally tolerated statin, add ezetimibe; if still above goal, add a PCSK9 inhibitor."
@@ -144,6 +149,94 @@ function lipidRecommendation(inputs, ascvd10Pct, ascvd30Pct) {
   };
 }
 
+function gfrCategory(egfr) {
+  if (egfr == null) return null;
+  if (egfr >= 90) return "G1";
+  if (egfr >= 60) return "G2";
+  if (egfr >= 45) return "G3a";
+  if (egfr >= 30) return "G3b";
+  if (egfr >= 15) return "G4";
+  return "G5";
+}
+
+function albuminuriaCategory(uacr) {
+  if (uacr == null) return null;
+  if (uacr < 30) return "A1";
+  if (uacr <= 300) return "A2";
+  return "A3";
+}
+
+// KDIGO 2012/2024 CKD heat-map: combined GFR x albuminuria risk category.
+const KDIGO_HEATMAP = {
+  G1: { A1: "low", A2: "moderate", A3: "high" },
+  G2: { A1: "low", A2: "moderate", A3: "high" },
+  G3a: { A1: "moderate", A2: "high", A3: "very high" },
+  G3b: { A1: "high", A2: "very high", A3: "very high" },
+  G4: { A1: "very high", A2: "very high", A3: "very high" },
+  G5: { A1: "very high", A2: "very high", A3: "very high" }
+};
+
+function ckdRecommendation(inputs) {
+  const { egfr, uacr, diabetes, knownCvd } = inputs;
+  const gfrCat = gfrCategory(egfr);
+  const albCat = albuminuriaCategory(uacr);
+  const bullets = [];
+
+  if (gfrCat == null) {
+    return {
+      title: "Chronic kidney disease staging",
+      guideline: "KDIGO 2024 Clinical Practice Guideline for CKD",
+      riskGroup: null,
+      bullets: ["eGFR not available — cannot stage CKD."]
+    };
+  }
+
+  const risk = albCat ? KDIGO_HEATMAP[gfrCat][albCat] : null;
+  const noCkd = gfrCat === "G1" || gfrCat === "G2";
+
+  let riskGroup;
+  if (risk) {
+    riskGroup = `${gfrCat}${albCat} — KDIGO risk: ${risk}`;
+  } else {
+    riskGroup = noCkd ? `${gfrCat} — albuminuria not assessed` : `${gfrCat} — CKD, albuminuria not assessed`;
+  }
+
+  if (noCkd && (albCat === "A1" || albCat == null)) {
+    bullets.push(
+      albCat == null
+        ? "eGFR is in the normal/mildly-reduced range; check a urine albumin-to-creatinine ratio (UACR) to rule out albuminuric kidney damage before concluding there is no CKD."
+        : "No CKD by KDIGO criteria (normal eGFR and UACR)."
+    );
+  } else {
+    bullets.push(
+      `Confirm chronicity (repeat eGFR/UACR ≥3 months apart) before labeling as CKD if this is a new finding.`
+    );
+    bullets.push("Blood pressure goal <130/80 mmHg; ACE inhibitor or ARB first-line if albuminuria is present, especially with diabetes or hypertension.");
+    if (diabetes || (uacr != null && uacr >= 200) || knownCvd) {
+      bullets.push(
+        "SGLT2 inhibitor recommended (independent of diabetes status) for eGFR ≥20 with albuminuria, or with diabetes/established ASCVD, for both kidney-disease progression and cardiovascular benefit (KDIGO 2024 / ADA 2026)."
+      );
+    }
+    bullets.push("Avoid/dose-adjust nephrotoxic agents (NSAIDs, certain contrast studies); review medication list for renal dosing.");
+  }
+
+  if (albCat == null && !noCkd) {
+    bullets.push("Albuminuria (UACR) not available — obtain it to complete KDIGO risk stratification and confirm the referral threshold below.");
+  }
+
+  const refer = gfrCat === "G4" || gfrCat === "G5" || albCat === "A3" || risk === "very high";
+  if (refer) {
+    bullets.push("Nephrology referral indicated: eGFR <30, UACR >300 mg/g, and/or KDIGO \"very high\" risk category all independently warrant referral.");
+  }
+
+  return {
+    title: "Chronic kidney disease staging",
+    guideline: "KDIGO 2024 Clinical Practice Guideline for the Evaluation and Management of CKD",
+    riskGroup,
+    bullets
+  };
+}
+
 function bpRecommendation(inputs, ascvd10Pct) {
   const { sbp, dbp, age, diabetes, knownCvd, egfr } = inputs;
   const category = bpCategory(sbp, dbp);
@@ -191,9 +284,21 @@ function bpRecommendation(inputs, ascvd10Pct) {
 }
 
 function heartFailureRecommendation(inputs, hf10Pct) {
-  const { diabetes, knownCvd, sbp, dbp } = inputs;
+  const { diabetes, knownCvd, sbp, dbp, heartFailureHistory } = inputs;
   const bullets = [];
-  const bpNotAtGoal = sbp != null && (sbp >= 130 || (dbp != null && dbp >= 80));
+
+  if (heartFailureHistory) {
+    bullets.push(
+      "A history of heart failure places this patient at Stage C (symptomatic) or beyond — outside what this tool's inputs can further stratify. Guideline-directed medical therapy (ARNI/ACEi/ARB, beta-blocker, MRA, SGLT2 inhibitor) and echocardiography-based EF assessment drive management, not primary-prevention risk factors."
+    );
+    return {
+      title: "Heart failure",
+      guideline: "2022 AHA/ACC/HFSA Heart Failure Guideline",
+      riskGroup: "History of heart failure — Stage C/D",
+      bullets,
+      note: "This tool is not a substitute for GDMT titration or EF-based management — refer to cardiology if not already established."
+    };
+  }
 
   const stageA =
     diabetes || knownCvd || bpCategory(sbp, dbp) !== "Normal blood pressure" || (hf10Pct != null && hf10Pct >= 5);
@@ -222,6 +327,138 @@ function heartFailureRecommendation(inputs, hf10Pct) {
     riskGroup: stageA ? "At-risk for heart failure (Stage A)" : "No Stage A risk factors identified from inputs provided",
     bullets,
     note: "This tool cannot assess for structural heart disease (Stage B) or symptoms (Stage C/D) — echocardiography and clinical evaluation are required for full HF staging."
+  };
+}
+
+function aspirinRecommendation(inputs, ascvd10Pct) {
+  const { age, knownCvd } = inputs;
+  const bullets = [];
+  let riskGroup;
+
+  if (knownCvd) {
+    riskGroup = "Secondary prevention";
+    bullets.push(
+      "Aspirin 75-100 mg daily is standard for secondary prevention in established ASCVD (separate from the primary-prevention statement below) — confirm no contraindication (active bleeding, recent major bleed) and reconcile with any concurrent antiplatelet/anticoagulant therapy."
+    );
+  } else if (age == null) {
+    riskGroup = "Age not provided";
+    bullets.push("Age is needed to apply the USPSTF primary-prevention age cutoffs below.");
+  } else if (age >= 60) {
+    riskGroup = "Primary prevention, age ≥60";
+    bullets.push(
+      "USPSTF recommends AGAINST initiating aspirin for primary prevention at age ≥60 (Grade D) — bleeding risk outweighs cardiovascular benefit at this age."
+    );
+  } else if (age >= 40) {
+    if (ascvd10Pct != null && ascvd10Pct >= 10) {
+      riskGroup = `Primary prevention, age 40-59, 10-yr risk ${ascvd10Pct}%`;
+      bullets.push(
+        "Individualize: USPSTF describes a small net benefit for low-dose aspirin in adults 40-59 with ≥10% 10-year CVD risk (Grade C) — appropriate only after shared decision-making that weighs the patient's bleeding risk (age, prior GI bleed, concurrent NSAID/anticoagulant use)."
+      );
+    } else {
+      riskGroup = "Primary prevention, age 40-59, lower risk";
+      bullets.push(
+        "Aspirin is not routinely recommended — at this risk level, bleeding risk is not clearly outweighed by cardiovascular benefit per USPSTF."
+      );
+    }
+  } else {
+    riskGroup = "Age <40";
+    bullets.push("Outside the age range addressed by the USPSTF's 2022 statement (40-59 individualized, ≥60 not recommended); routine aspirin is not indicated for primary prevention.");
+  }
+
+  return {
+    title: "Aspirin for ASCVD prevention",
+    guideline: "2022 USPSTF Recommendation Statement: Aspirin Use to Prevent Cardiovascular Disease",
+    riskGroup,
+    bullets
+  };
+}
+
+function diabetesRecommendation(inputs) {
+  const { diabetes, age, egfr, knownCvd, heartFailureHistory } = inputs;
+  const bullets = [];
+
+  if (!diabetes) {
+    return {
+      title: "Diabetes screening & management",
+      guideline: "2026 ADA Standards of Care in Diabetes",
+      riskGroup: "No diabetes indicated",
+      bullets: [
+        age != null && age >= 35
+          ? "Screen for prediabetes/diabetes at least every 3 years starting at age 35 (earlier/more frequently with obesity, hypertension, or other risk factors)."
+          : "Routine screening interval per ADA is age ≥35 (or earlier with risk factors such as obesity, hypertension, or gestational diabetes history)."
+      ]
+    };
+  }
+
+  bullets.push("General A1c target <7% for most nonpregnant adults; individualize looser (~<8%) for limited life expectancy or high hypoglycemia risk, or tighter (<6.5%) for select healthy patients early in disease.");
+  bullets.push("Metformin remains a reasonable first-line agent" + (egfr != null && egfr < 30 ? ", but is contraindicated at this patient's eGFR (<30 mL/min/1.73m²) — dose-reduce below eGFR 45 and stop below 30." : "."));
+
+  const compellingIndication = knownCvd || heartFailureHistory || (egfr != null && egfr < 60);
+  if (compellingIndication) {
+    const reasons = [knownCvd && "established ASCVD", heartFailureHistory && "heart failure", egfr != null && egfr < 60 && "CKD"].filter(Boolean).join(", ");
+    bullets.push(
+      `An SGLT2 inhibitor and/or GLP-1 receptor agonist with demonstrated cardiovascular benefit is recommended independent of A1c, with or without metformin, given ${reasons} (Class I).`
+    );
+    if (heartFailureHistory) {
+      bullets.push("SGLT2 inhibitor specifically recommended for HF regardless of ejection fraction.");
+    }
+  }
+
+  bullets.push("Blood pressure and lipid targets follow the sections above; diabetes itself is an unconditional statin indication at age 40-75.");
+
+  return {
+    title: "Diabetes management",
+    guideline: "2026 ADA Standards of Care in Diabetes",
+    riskGroup: "Diabetes present",
+    bullets
+  };
+}
+
+function cha2ds2VascRecommendation(inputs) {
+  const { age, sex, diabetes, sbp, dbp, bpMeds, priorStroke, priorMI, priorPAD, heartFailureHistory } = inputs;
+
+  const hypertensionPoint = bpMeds || bpCategory(sbp, dbp) === "Stage 1 hypertension" || bpCategory(sbp, dbp) === "Stage 2 hypertension";
+  const agePoints = age != null && age >= 75 ? 2 : age != null && age >= 65 ? 1 : 0;
+  const vascularDisease = priorMI || priorPAD;
+
+  const components = [
+    { label: "Congestive heart failure / LV dysfunction", points: heartFailureHistory ? 1 : 0 },
+    { label: "Hypertension", points: hypertensionPoint ? 1 : 0 },
+    { label: age != null && age >= 75 ? "Age ≥75" : "Age 65-74", points: agePoints },
+    { label: "Diabetes", points: diabetes ? 1 : 0 },
+    { label: "Prior stroke/TIA/thromboembolism", points: priorStroke ? 2 : 0 },
+    { label: "Vascular disease (prior MI or PAD)", points: vascularDisease ? 1 : 0 },
+    { label: "Sex category (female)", points: sex === "female" ? 1 : 0 }
+  ];
+
+  const score = components.reduce((sum, c) => sum + c.points, 0);
+  const isFemale = sex === "female";
+
+  let recommendation;
+  if (isFemale) {
+    if (score <= 1) recommendation = "No antithrombotic therapy indicated for stroke prevention on CHA₂DS₂-VASc grounds (score reflects the sex point alone, if present).";
+    else if (score === 2) recommendation = "Consider anticoagulation (Class IIb) — shared decision-making.";
+    else recommendation = "Anticoagulation recommended (Class I).";
+  } else {
+    if (score === 0) recommendation = "No antithrombotic therapy indicated for stroke prevention on CHA₂DS₂-VASc grounds.";
+    else if (score === 1) recommendation = "Consider anticoagulation (Class IIb) — shared decision-making.";
+    else recommendation = "Anticoagulation recommended (Class I).";
+  }
+
+  const bullets = [
+    `CHA₂DS₂-VASc score: ${score} (${components.filter((c) => c.points > 0).map((c) => `${c.label} +${c.points}`).join(", ") || "no points"}).`,
+    recommendation
+  ];
+
+  if (score >= 1) {
+    bullets.push("A direct oral anticoagulant (DOAC) is preferred over warfarin for most patients — warfarin remains necessary for mechanical heart valves or moderate-to-severe mitral stenosis.");
+  }
+
+  return {
+    title: "CHA₂DS₂-VASc (atrial fibrillation)",
+    guideline: "2019 AHA/ACC/HRS Atrial Fibrillation Guideline",
+    riskGroup: `Score ${score}`,
+    bullets
   };
 }
 
@@ -294,7 +531,10 @@ function ckmRecommendation(inputs) {
 
 /**
  * @param {object} inputs - the same clinical inputs used for computePreventRisk,
- *   plus optional: ldl, triglycerides, hba1c, waist, uacr, knownCvd, dbp
+ *   plus optional: ldl, triglycerides, hba1c, waist, uacr, dbp, priorMI,
+ *   priorStroke, priorPAD, acsWithin12mo, priorRevasc, heartFailureHistory,
+ *   atrialFibrillation (knownCvd is derived from the history fields, not a
+ *   direct input)
  * @param {object} riskResults - output of computePreventRisk().risks
  */
 export function generateRecommendations(inputs, riskResults) {
@@ -302,10 +542,19 @@ export function generateRecommendations(inputs, riskResults) {
   const ascvd30Pct = pct(riskResults?.ascvd?.[30]);
   const hf10Pct = pct(riskResults?.hf?.[10]);
 
-  return {
+  const result = {
     lipid: lipidRecommendation(inputs, ascvd10Pct, ascvd30Pct),
     bp: bpRecommendation(inputs, ascvd10Pct),
+    aspirin: aspirinRecommendation(inputs, ascvd10Pct),
+    diabetes: diabetesRecommendation(inputs),
+    ckd: ckdRecommendation(inputs),
     heartFailure: heartFailureRecommendation(inputs, hf10Pct),
     ckm: ckmRecommendation({ ...inputs, ascvd10Pct })
   };
+
+  if (inputs.atrialFibrillation) {
+    result.cha2ds2vasc = cha2ds2VascRecommendation(inputs);
+  }
+
+  return result;
 }

@@ -8,6 +8,7 @@ import { computePreventRisk } from "./lib/prevent.js";
 import { generateRecommendations } from "./lib/guidelines.js";
 import { parsePatientText } from "./lib/textParser.js";
 import { recognizeImageText } from "./lib/ocr.js";
+import { buildSummaryText } from "./lib/summary.js";
 import {
   defaultFormData,
   applyExtraction,
@@ -28,6 +29,38 @@ export default function App() {
   const [results, setResults] = useState(null);
   const [recommendations, setRecommendations] = useState(null);
   const [calcError, setCalcError] = useState(null);
+  const [copyStatus, setCopyStatus] = useState(null);
+
+  function handleNewPatient() {
+    if (
+      (results || Object.values(formData).some((v) => v !== "" && v !== false)) &&
+      !window.confirm("Clear all current patient data and start a new patient?")
+    ) {
+      return;
+    }
+    setImageDataUrl(null);
+    setProseText("");
+    setFormData(defaultFormData);
+    setExtracting(false);
+    setExtractError(null);
+    setExtractNotes(null);
+    setResults(null);
+    setRecommendations(null);
+    setCalcError(null);
+    setCopyStatus(null);
+    setTimeout(() => document.getElementById("age")?.focus(), 0);
+  }
+
+  async function handleCopySummary() {
+    const text = buildSummaryText({ formData, results, recommendations });
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopyStatus("Copied to clipboard.");
+    } catch {
+      setCopyStatus("Couldn't access the clipboard — select and copy the text manually from the print view.");
+    }
+    setTimeout(() => setCopyStatus(null), 4000);
+  }
 
   async function handleExtract() {
     setExtracting(true);
@@ -94,13 +127,20 @@ export default function App() {
 
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <h1>PREVENT Risk Suite</h1>
-        <p>ASCVD · Total CVD · Heart Failure risk, calculated with the AHA PREVENT equations — plus guideline-based recommendations</p>
+      <header className="app-header no-print">
+        <div className="header-row">
+          <div>
+            <h1>PREVENT Risk Suite</h1>
+            <p>ASCVD · Total CVD · Heart Failure risk, calculated with the AHA PREVENT equations — plus guideline-based recommendations</p>
+          </div>
+          <button className="btn btn-outline btn-new-patient" onClick={handleNewPatient}>
+            New patient / Clear
+          </button>
+        </div>
       </header>
 
       <main className="app-main">
-        <section className="card">
+        <section className="card no-print">
           <h2>1. Bring in patient data</h2>
           <div className="grid-2">
             <div>
@@ -124,7 +164,7 @@ export default function App() {
           {extractNotes && <div className="alert" style={{ marginTop: "0.75rem" }}>{extractNotes}</div>}
         </section>
 
-        <section className="card">
+        <section className="card no-print">
           <h2>2. Review &amp; confirm patient data</h2>
           <p className="small-muted">Always double-check auto-extracted values before calculating.</p>
           <PatientForm formData={formData} setFormData={setFormData} />
@@ -138,6 +178,18 @@ export default function App() {
 
         <ResultsPanel results={results} />
         <RecommendationsPanel recommendations={recommendations} />
+
+        {results && (
+          <div className="btn-row no-print" style={{ padding: "0 0.25rem" }}>
+            <button className="btn btn-outline" onClick={handleCopySummary}>
+              Copy summary for chart note
+            </button>
+            <button className="btn btn-outline" onClick={() => window.print()}>
+              Print summary
+            </button>
+            {copyStatus && <span className="small-muted">{copyStatus}</span>}
+          </div>
+        )}
       </main>
 
       <footer className="disclaimer">
