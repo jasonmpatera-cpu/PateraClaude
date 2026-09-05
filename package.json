@@ -1,12 +1,12 @@
 {
-  "name": "prevent-risk-suite",
+  "name": "nba-pack-opener-repo",
   "version": "1.0.0",
   "private": true,
-  "description": "ASCVD / CVD / Heart Failure risk calculator (AHA PREVENT equations) with local, offline-friendly lab/data extraction and guideline-based recommendations.",
+  "description": "Free, unlimited NBA card pack opening simulator inspired by NBA 2K23 MyTeam.",
   "scripts": {
-    "install:all": "npm install --prefix client",
-    "dev": "npm run dev --prefix client",
-    "build": "npm run build --prefix client",
-    "preview": "npm run preview --prefix client"
+    "install:all": "npm install --prefix nba-pack-opener",
+    "dev": "npm run dev --prefix nba-pack-opener",
+    "build": "npm run build --prefix nba-pack-opener",
+    "preview": "npm run preview --prefix nba-pack-opener"
   }
 }
