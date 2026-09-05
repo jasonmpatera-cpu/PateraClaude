@@ -1,8 +1,9 @@
 {
-  "name": "prevent-risk-suite-client",
+  "name": "nba-pack-opener",
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "description": "Free, unlimited NBA card pack opening simulator inspired by NBA 2K23 MyTeam.",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -10,8 +11,7 @@
   },
   "dependencies": {
     "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "tesseract.js": "^7.0.0"
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "^4.3.4",
